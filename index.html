@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>ARCH 사원증 메이커</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<style>
+    :root {
+        /* 기본 색상 설정 */
+        --theme-color: #a0a5aa; 
+        --logo-color: #4a4d52;
+        --name-color: #111111;
+        --rank-color: #666666;
+        --bottom-text-color: #ffffff;
+        --bg-color: #ffffff;
+        --border-color: #cfd4db;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #e9ecef;
+        font-family: 'Pretendard', sans-serif;
+        margin: 0;
+        padding: 40px 20px;
+    }
+
+    /* 설정 패널 */
+    .setup-panel {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 15px;
+        width: 100%;
+        max-width: 950px;
+    }
+
+    .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .control-group label {
+        font-size: 13px;
+        font-weight: bold;
+        color: #444;
+    }
+
+    /* 스티커 버튼 영역 스타일 */
+    .sticker-container {
+        max-height: 130px; 
+        overflow-y: auto; 
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 10px;
+        background: #f8f9fa;
+    }
+    
+    .sticker-buttons {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .sticker-buttons button, .custom-sticker-label {
+        padding: 5px 8px;
+        background-color: #ffffff;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #333; /* 텍스트 색상 추가 */
+    }
+    .sticker-buttons button:hover, .custom-sticker-label:hover {
+        background-color: #e2e6ea;
+        transform: scale(1.1);
+    }
+    /* '+ 내 사진 추가' 버튼 스타일 수정 */
+    .custom-sticker-label {
+        font-size: 13px;
+        font-weight: bold;
+        background-color: #ffffff; /* 하얀 배경으로 변경 */
+        color: #2c3e50; /* 어두운 텍스트 색상 */
+        border: 1px solid #ced4da; /* 테두리 추가 */
+        padding: 5px 12px;
+    }
+    .custom-sticker-label:hover {
+        background-color: #e9ecef; /* hover 시 배경색 변경 */
+        color: #1a252f; /* hover 시 텍스트 색상 변경 */
+    }
+
+    /* 슬라이더 스타일 */
+    input[type="range"] {
+        width: 100%;
+        cursor: pointer;
+    }
+
+    input[type="color"] {
+        width: 100%;
+        height: 38px;
+        border: none;
+        border-radius: 6px;
+        padding: 0;
+        cursor: pointer;
+    }
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-webkit-color-swatch { border: 1px solid #ddd; border-radius: 6px; }
+    
+    input[type="file"], button { cursor: pointer; }
+
+    .save-btn {
+        padding: 14px;
+        background-color: #4a4d52;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: bold;
+        transition: 0.2s;
+        grid-column: 1 / -1; 
+        margin-top: 15px;
+    }
+    .save-btn:hover { background-color: #1a252f; }
+
+    /* 사원증 출력 영역 */
+    .print-area {
+        display: flex;
+        gap: 30px;
+        padding: 20px;
+        background: transparent;
+        position: relative;
+    }
+
+    .id-card {
+        width: 280px;
+        height: 440px;
+        background-color: var(--bg-color);
+        border-radius: 12px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: 1.5px solid var(--border-color);
+    }
+
+    /* 앞면 디자인 */
+    .front .logo {
+        margin-top: 25px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 34px;
+        font-weight: 900; 
+        color: var(--logo-color);
+        letter-spacing: 1px;
+    }
+
+    .front .photo-wrapper {
+        margin-top: 15px;
+        width: 170px;
+        height: 210px;
+        border: 2px solid var(--theme-color);
+        padding: 3px;
+        box-sizing: border-box;
+        background-color: var(--bg-color);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .front .photo-wrapper img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #eee;
+    }
+
+    .front .info-text {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .front .name {
+        font-size: 26px;
+        font-weight: 600;
+        color: var(--name-color);
+        letter-spacing: 5px;
+        margin-bottom: 5px;
+    }
+
+    .front .rank {
+        font-size: 14px;
+        color: var(--rank-color);
+    }
+
+    .front .bottom-bar {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 35px;
+        background-color: var(--theme-color);
+        color: var(--bottom-text-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    /* 뒷면 디자인 */
+    .back { display: flex; }
+    .back .side-bar {
+        width: 60px;
+        height: 100%;
+        background-color: var(--theme-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .back .side-text {
+        transform: rotate(-90deg);
+        white-space: nowrap;
+        color: var(--bottom-text-color);
+        font-size: 18px; 
+        font-weight: 600;
+    }
+    .back .content {
+        flex: 1;
+        padding: 40px 20px;
+    }
+    .back .content .notice {
+        color: var(--theme-color);
+        font-size: 14px; 
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .back .content p { font-size: 12px; color: var(--name-color); line-height: 1.8; margin: 0; opacity: 0.8; }
+
+    /* 드래그 가능한 스티커 스타일 (전역 필터 제거) */
+    .drag-sticker {
+        position: absolute;
+        cursor: grab;
+        user-select: none;
+        z-index: 999; 
+        font-size: 35px; 
+        title: "더블클릭하면 삭제됩니다!";
+        transition: filter 0.2s; /* 필터 변경 시 부드러운 효과 추가 */
+    }
+    .drag-sticker:active { cursor: grabbing; }
+    .drag-sticker img {
+        width: 80px; 
+        height: auto;
+        pointer-events: none; 
+    }
+    /* 선택된 스티커 스타일 추가 */
+    .selected-sticker {
+        border: 2px solid red !important; /* 클릭 시 빨간 테두리 */
+        box-sizing: content-box; /* 테두리가 크기에 포함되지 않도록 설정 */
+    }
+</style>
+</head>
+<body>
+
+<div class="setup-panel">
+    <div class="control-group">
+        <label>1. 사진 올리기</label>
+        <input type="file" id="photoInput" accept="image/*">
+    </div>
+    <div class="control-group">
+        <label>2. 바탕 색상</label>
+        <input type="color" id="bgColor" value="#ffffff">
+    </div>
+    <div class="control-group">
+        <label>3. 테두리 색상</label>
+        <input type="color" id="borderColor" value="#cfd4db">
+    </div>
+    <div class="control-group">
+        <label>4. 포인트 색상</label>
+        <input type="color" id="themeColor" value="#a0a5aa">
+    </div>
+    <div class="control-group">
+        <label>5. 로고 색상</label>
+        <input type="color" id="logoColor" value="#4a4d52">
+    </div>
+    <div class="control-group">
+        <label>6. 이름 색상</label>
+        <input type="color" id="nameColor" value="#111111">
+    </div>
+    <div class="control-group">
+        <label>7. 등급 색상</label>
+        <input type="color" id="rankColor" value="#666666">
+    </div>
+
+    <div class="control-group">
+        <label>8. 바 글씨 색상</label>
+        <input type="color" id="bottomTextColor" value="#ffffff">
+    </div>
+    
+    <div class="control-group">
+        <label>9. 선택된 스티커 필터 (색상/투명도)</label>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <span style="font-size: 11px; width: 40px;">색상</span>
+                <input type="range" id="stickerHue" min="0" max="360" value="0">
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <span style="font-size: 11px; width: 40px;">투명도</span>
+                <input type="range" id="stickerOpacity" min="20" max="100" value="100">
+            </div>
+        </div>
+    </div>
+
+    <div class="control-group" style="grid-column: 1 / -1;">
+        <label>10. 스티커 추가 및 꾸미기 (클릭 선택 / 드래그 이동 / 더블클릭 삭제)</label>
+        <div class="sticker-container">
+            <div class="sticker-buttons">
+                <label class="custom-sticker-label">
+                    + 내 사진 추가
+                    <input type="file" id="customStickerInput" accept="image/*" style="display:none;">
+                </label>
+                <button onclick="addEmojiSticker('🍓')">🍓</button>
+                <button onclick="addEmojiSticker('👑')">👑</button>
+                <button onclick="addEmojiSticker('🪽')">🪽</button>
+                <button onclick="addEmojiSticker('🐈‍⬛')">🐈‍⬛</button>
+                <button onclick="addEmojiSticker('🐈')">🐈</button>
+                <button onclick="addEmojiSticker('🦊')">🦊</button>
+                <button onclick="addEmojiSticker('😊')">😊</button>
+                <button onclick="addEmojiSticker('😽')">😽</button>
+                <button onclick="addEmojiSticker('🦋')">🦋</button>
+                <button onclick="addEmojiSticker('🥭')">🥭</button>
+                <button onclick="addEmojiSticker('🍎')">🍎</button>
+                <button onclick="addEmojiSticker('🌸')">🌸</button>
+                <button onclick="addEmojiSticker('🌹')">🌹</button>
+                <button onclick="addEmojiSticker('🌼')">🌼</button>
+                <button onclick="addEmojiSticker('🌟')">🌟</button>
+                <button onclick="addEmojiSticker('⭐')">⭐</button>
+                <button onclick="addEmojiSticker('🌈')">🌈</button>
+                <button onclick="addEmojiSticker('🔥')">🔥</button>
+                <button onclick="addEmojiSticker('💧')">💧</button>
+                <button onclick="addEmojiSticker('🌿')">🌿</button>
+                <button onclick="addEmojiSticker('🌪️')">🌪️</button>
+                <button onclick="addEmojiSticker('🧊')">🧊</button>
+                <button onclick="addEmojiSticker('❤️')">❤️</button>
+                <button onclick="addEmojiSticker('🐶')">🐶</button>
+                <button onclick="addEmojiSticker('✨')">✨</button>
+                <button onclick="addEmojiSticker('🍒')">🍒</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="save-btn" onclick="saveCard()">사원증 이미지로 저장하기</button>
+</div>
+
+<div class="print-area" id="idCardSet">
+    <div class="id-card front" id="cardFront">
+        <div class="logo">ARCH</div>
+        <div class="photo-wrapper">
+            <img id="photoPreview" src="" alt="">
+        </div>
+        <div class="info-text">
+            <div class="name" contenteditable="true">NOBEL</div>
+            <div class="rank" contenteditable="true"> S-불속성 센티넬 / 가이드</div>
+        </div>
+        <div class="bottom-bar" contenteditable="true">HARMONY DIV.</div>
+    </div>
+
+    <div class="id-card back" id="cardBack">
+        <div class="side-bar">
+            <div class="side-text" contenteditable="true">■ Kim cherry mango</div>
+        </div>
+        <div class="content">
+            <div class="notice" contenteditable="true">| 주의사항</div>
+            <p contenteditable="true">
+                사원증은 항상 소지해야 합니다.<br>
+                타인에게 양도·대여할 수 없습니다.<br>
+                분실 시 재발급을 받아야 합니다.<br><br>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const root = document.documentElement.style;
+    const printArea = document.getElementById('idCardSet');
+    let selectedSticker = null; // 현재 선택된 스티커 저장 변수 추가
+
+    // --- 스티커 선택 및 전역 필터 적용 스크립트 수정 ---
+    // 전역 필터 적용을 제거하고, 개별 스티커 제어로 변경
+
+    // 1. 스티커 클릭 선택 기능
+    printArea.addEventListener('click', (e) => {
+        const clickedSticker = e.target.closest('.drag-sticker');
+
+        if (clickedSticker) {
+            // 이전에 선택된 스티커 선택 해제
+            if (selectedSticker && selectedSticker !== clickedSticker) {
+                selectedSticker.classList.remove('selected-sticker');
+            }
+
+            // 새 스티커 선택
+            selectedSticker = clickedSticker;
+            selectedSticker.classList.add('selected-sticker');
+
+            // 슬라이더 값을 선택된 스티커의 현재 필터 값으로 업데이트
+            document.getElementById('stickerHue').value = 0;
+            document.getElementById('stickerOpacity').value = 100;
+        } else if (selectedSticker) {
+            // 스티커 이외의 영역 클릭 시 선택 해제
+            selectedSticker.classList.remove('selected-sticker');
+            selectedSticker = null;
+        }
+    });
+
+    // 2. 스티커 필터(색조, 투명도) 조절 스크립트 수정
+    document.getElementById('stickerHue').addEventListener('input', (e) => {
+        if (selectedSticker) {
+            // 선택된 스티커의 인라인 스타일 필터 업데이트
+            const hue = e.target.value;
+            const currentFilter = selectedSticker.style.filter || '';
+            const opacityMatch = currentFilter.match(/opacity\(([\d\.]+)\)/);
+            const opacity = opacityMatch ? opacityMatch[1] : '1';
+            
+            selectedSticker.style.filter = `hue-rotate(${hue}deg) opacity(${opacity})`;
+        }
+    });
+    
+    document.getElementById('stickerOpacity').addEventListener('input', (e) => {
+        if (selectedSticker) {
+            // 선택된 스티커의 인라인 스타일 필터 업데이트
+            const opacity = e.target.value / 100;
+            const currentFilter = selectedSticker.style.filter || '';
+            const hueMatch = currentFilter.match(/hue-rotate\(([\d\.]+)deg\)/);
+            const hue = hueMatch ? hueMatch[1] : '0';
+
+            selectedSticker.style.filter = `hue-rotate(${hue}deg) opacity(${opacity})`;
+        }
+    });
+
+    // --- 기본 사진 업로드 스크립트 ---
+    document.getElementById('photoInput').addEventListener('change', function(e) {
+        if(e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = document.getElementById('photoPreview');
+                img.onload = function() {
+                    const wrapperRatio = 164 / 204;
+                    const imgRatio = img.naturalWidth / img.naturalHeight;
+                    if (imgRatio > wrapperRatio) {
+                        img.style.width = 'auto';
+                        img.style.height = '100%';
+                    } else {
+                        img.style.width = '100%';
+                        img.style.height = 'auto';
+                    }
+                };
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+
+    // --- 색상 변경 스크립트 (bottomTextColor 연결 추가!) ---
+    const colorInputs = [
+        { id: 'bgColor', variable: '--bg-color' },
+        { id: 'borderColor', variable: '--border-color' },
+        { id: 'themeColor', variable: '--theme-color' },
+        { id: 'logoColor', variable: '--logo-color' },
+        { id: 'nameColor', variable: '--name-color' },
+        { id: 'rankColor', variable: '--rank-color' },
+        { id: 'bottomTextColor', variable: '--bottom-text-color' }
+    ];
+    colorInputs.forEach(item => {
+        document.getElementById(item.id).addEventListener('input', (e) => {
+            root.setProperty(item.variable, e.target.value);
+        });
+    });
+
+    // --- 스티커 기능 스크립트 수정 ---
+    
+    // 1. 이모지 스티커 추가 (필터 초기화 추가)
+    function addEmojiSticker(emoji) {
+        const sticker = document.createElement('div');
+        sticker.className = 'drag-sticker';
+        sticker.innerText = emoji;
+        sticker.title = "더블클릭하여 삭제";
+        
+        // 초기 생성 위치
+        sticker.style.left = '100px';
+        sticker.style.top = '100px';
+
+        // 필터 초기화
+        sticker.style.filter = 'hue-rotate(0deg) opacity(1)';
+        
+        // 더블클릭 시 삭제
+        sticker.ondblclick = function() { sticker.remove(); };
+        
+        printArea.appendChild(sticker);
+        makeDraggable(sticker);
+    }
+
+    // 2. 내 사진 스티커 추가 (필터 초기화 추가)
+    document.getElementById('customStickerInput').addEventListener('change', function(e) {
+        if(e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const sticker = document.createElement('div');
+                sticker.className = 'drag-sticker';
+                sticker.title = "더블클릭하여 삭제";
+
+                const img = document.createElement('img');
+                img.src = event.target.result;
+                sticker.appendChild(img);
+                
+                sticker.style.left = '100px';
+                sticker.style.top = '100px';
+
+                // 필터 초기화
+                sticker.style.filter = 'hue-rotate(0deg) opacity(1)';
+                
+                sticker.ondblclick = function() { sticker.remove(); };
+
+                printArea.appendChild(sticker);
+                makeDraggable(sticker);
+            }
+            reader.readAsDataURL(e.target.files[0]);
+            e.target.value = ''; // 같은 사진 또 올릴 수 있게 리셋
+        }
+    });
+
+    // 3. 스티커 드래그 이동 기능
+    function makeDraggable(elmnt) {
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        
+        elmnt.onmousedown = dragMouseDown;
+        elmnt.ontouchstart = dragMouseDown; 
+
+        function dragMouseDown(e) {
+            e = e || window.event;
+            if(e.type === 'touchstart') {
+                pos3 = e.touches[0].clientX;
+                pos4 = e.touches[0].clientY;
+            } else {
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+            }
+            document.onmouseup = closeDragElement;
+            document.onmousemove = elementDrag;
+            document.ontouchend = closeDragElement;
+            document.ontouchmove = elementDrag;
+        }
+
+        function elementDrag(e) {
+            e = e || window.event;
+            if(e.type !== 'touchmove') e.preventDefault();
+            
+            let clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+            let clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+            pos1 = pos3 - clientX;
+            pos2 = pos4 - clientY;
+            pos3 = clientX;
+            pos4 = clientY;
+            
+            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+        }
+
+        function closeDragElement() {
+            document.onmouseup = null;
+            document.onmousemove = null;
+            document.ontouchend = null;
+            document.ontouchmove = null;
+        }
+    }
+
+    // --- 이미지로 저장 기능 ---
+    function saveCard() {
+        const area = document.getElementById('idCardSet');
+        html2canvas(area, { backgroundColor: null, scale: 3, useCORS: true }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'ARCH_사원증.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }).catch(err => {
+            alert("저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요!");
+        });
+    }
+</script>
+
+</body>
+</html>
