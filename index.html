@@ -441,22 +441,11 @@
             gap: 15px; 
             transform: scale(0.6); /* 좁은 화면에 두 장을 담기 위한 축소 */
             transform-origin: center center; 
-            transition: transform 0s; /* 깜빡임 최소화 */
         }
     }
 </style>
 </head>
 <body>
-
-<div style="position: absolute; top: -9999px; left: -9999px; visibility: hidden;">
-    <span style="font-family: 'Noto Sans KR';">preload</span>
-    <span style="font-family: 'Noto Serif KR';">preload</span>
-    <span style="font-family: 'Playfair Display';">preload</span>
-    <span style="font-family: 'Cinzel';">preload</span>
-    <span style="font-family: 'Galmuri9';">preload</span>
-    <span style="font-family: 'Jua';">preload</span>
-    <span style="font-family: 'Gaegu';">preload</span>
-</div>
 
 <div class="setup-panel">
     
@@ -1053,41 +1042,53 @@
         }
     }
 
-    // ★ 모바일 저장 오류/화질 저하 및 폰트 풀림 완벽 해결 ★
+    // ★ 모바일 저장 오류/화질 저하 완벽 해결 ★
     function saveCard() {
         clearSelections(); 
 
         const area = document.getElementById('idCardSet');
         const isMobile = window.innerWidth <= 900;
         
-        // PC는 그대로 유지 (pixelRatio: 3), 모바일은 초고화질 보장 (pixelRatio: 4)
+        // PC 설정은 그대로 유지 (pixelRatio: 3), 모바일은 훨씬 더 선명하게 (pixelRatio: 4)
         const options = { 
             pixelRatio: isMobile ? 4 : 3, 
             useCORS: true, 
-            cacheBust: true
+            cacheBust: true 
         };
 
-        // 모바일: 캡처 직전에만 100% 원본 크기로 강제 확대
+        // 모바일일 경우: 화면에 작게 쪼그라든 캔버스를 캡처 직전에만 100% 원본 크기로 강제 확대!
         if (isMobile) {
             area.style.transform = 'scale(1)';
         }
 
-        // 브라우저가 화면을 100%로 다시 그리고 폰트를 적용할 시간을 넉넉히 줌 (0.3초 대기)
+        // 크기가 커진 상태가 화면에 반영될 수 있도록 아주 잠깐(0.1초) 대기 후 캡처 진행
         setTimeout(() => {
+            // 1차 렌더링 (모바일 화면 로드 지연 방지용 빈 캡처)
             htmlToImage.toPng(area, options)
-                .then(function (dataUrl) {
-                    if (isMobile) area.style.transform = ''; // 다시 원래 축소된 화면으로 복구
+                .then(function () {
+                    // 약간의 지연 후 2차 최종 렌더링 (이미지 증발 방지)
+                    setTimeout(() => {
+                        htmlToImage.toPng(area, options)
+                            .then(function (dataUrl) {
+                                // 캡처가 끝나면 아무 일도 없었다는 듯 다시 원래 모바일 축소 화면으로 즉시 복구!
+                                if (isMobile) area.style.transform = '';
 
-                    const link = document.createElement('a');
-                    link.download = 'ARCH_사원증.png';
-                    link.href = dataUrl;
-                    link.click();
+                                const link = document.createElement('a');
+                                link.download = 'ARCH_사원증.png';
+                                link.href = dataUrl;
+                                link.click();
+                            })
+                            .catch(function (error) {
+                                if (isMobile) area.style.transform = '';
+                                alert("저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+                            });
+                    }, 150);
                 })
                 .catch(function (error) {
                     if (isMobile) area.style.transform = '';
-                    alert("저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+                    alert("이미지 처리 중 오류가 발생했습니다.");
                 });
-        }, 300);
+        }, 100);
     }
 </script>
 
