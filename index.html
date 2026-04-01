@@ -416,31 +416,31 @@
         opacity: 0.8;
     }
 
-    /* ★ 모바일 환경 레이아웃 완벽 조정 (바를 위로, 사원증은 무조건 나란히!) ★ */
+    /* ★ 모바일 환경 레이아웃 ★ */
     @media (max-width: 900px) {
         body { 
-            flex-direction: column; /* 위(제작바) 아래(사원증) 배치 */
+            flex-direction: column; 
         }
         .setup-panel { 
             width: 100%; 
-            height: 42vh; /* 상단 42% 고정 */
+            height: 42vh; 
             border-bottom: 2px solid #ddd;
             padding: 15px 20px;
         }
         .canvas-container { 
             width: 100%;
-            height: 58vh; /* 하단 58% 고정 */
+            height: 58vh; 
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 0;
-            overflow: hidden; /* 스크롤바 숨김 (축소해서 한눈에 보이게 함) */
+            overflow: hidden; 
         }
         .print-area { 
             flex-direction: row !important; /* 모바일에서도 무조건 나란히 가로 배치! */
             gap: 15px; 
-            transform: scale(0.6); /* 모바일 화면에 두 개가 나란히 쏙 들어가도록 60% 축소 */
-            transform-origin: center center; /* 가운데를 기준으로 축소 */
+            transform: scale(0.6); /* 좁은 화면에 두 장을 담기 위한 축소 */
+            transform-origin: center center; 
         }
     }
 </style>
@@ -1042,33 +1042,53 @@
         }
     }
 
-    // ★ 모바일 저장 오류 해결을 위한 연속 두 번 렌더링 스크립트 적용 ★
+    // ★ 모바일 저장 오류/화질 저하 완벽 해결 ★
     function saveCard() {
         clearSelections(); 
 
         const area = document.getElementById('idCardSet');
-        const options = { pixelRatio: 2, useCORS: true, cacheBust: true };
+        const isMobile = window.innerWidth <= 900;
+        
+        // PC 설정은 그대로 유지 (pixelRatio: 3), 모바일은 훨씬 더 선명하게 (pixelRatio: 4)
+        const options = { 
+            pixelRatio: isMobile ? 4 : 3, 
+            useCORS: true, 
+            cacheBust: true 
+        };
 
-        // 1차 렌더링 (모바일 화면 로드 지연 방지용 빈 캡처)
-        htmlToImage.toPng(area, options)
-            .then(function () {
-                // 약간의 지연 후 2차 최종 렌더링
-                setTimeout(() => {
-                    htmlToImage.toPng(area, options)
-                        .then(function (dataUrl) {
-                            const link = document.createElement('a');
-                            link.download = 'ARCH_사원증.png';
-                            link.href = dataUrl;
-                            link.click();
-                        })
-                        .catch(function (error) {
-                            alert("저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
-                        });
-                }, 150);
-            })
-            .catch(function (error) {
-                alert("이미지 처리 중 오류가 발생했습니다.");
-            });
+        // 모바일일 경우: 화면에 작게 쪼그라든 캔버스를 캡처 직전에만 100% 원본 크기로 강제 확대!
+        if (isMobile) {
+            area.style.transform = 'scale(1)';
+        }
+
+        // 크기가 커진 상태가 화면에 반영될 수 있도록 아주 잠깐(0.1초) 대기 후 캡처 진행
+        setTimeout(() => {
+            // 1차 렌더링 (모바일 화면 로드 지연 방지용 빈 캡처)
+            htmlToImage.toPng(area, options)
+                .then(function () {
+                    // 약간의 지연 후 2차 최종 렌더링 (이미지 증발 방지)
+                    setTimeout(() => {
+                        htmlToImage.toPng(area, options)
+                            .then(function (dataUrl) {
+                                // 캡처가 끝나면 아무 일도 없었다는 듯 다시 원래 모바일 축소 화면으로 즉시 복구!
+                                if (isMobile) area.style.transform = '';
+
+                                const link = document.createElement('a');
+                                link.download = 'ARCH_사원증.png';
+                                link.href = dataUrl;
+                                link.click();
+                            })
+                            .catch(function (error) {
+                                if (isMobile) area.style.transform = '';
+                                alert("저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+                            });
+                    }, 150);
+                })
+                .catch(function (error) {
+                    if (isMobile) area.style.transform = '';
+                    alert("이미지 처리 중 오류가 발생했습니다.");
+                });
+        }, 100);
     }
 </script>
 
