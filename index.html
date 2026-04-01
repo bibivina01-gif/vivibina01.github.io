@@ -116,6 +116,7 @@
     .save-btn:hover { background-color: #1a252f; }
     .save-btn:disabled { background-color: #888; cursor: not-allowed; }
 
+    /* 사원증 출력 영역 */
     .print-area {
         display: flex; flex-direction: row; gap: 30px; padding: 20px; background: transparent; position: relative;
     }
@@ -126,6 +127,7 @@
         display: flex; flex-direction: column; align-items: center; border: 1.5px solid var(--border-color); flex-shrink: 0;
     }
 
+    /* 앞면 디자인 */
     .card-face .logo { margin-top: 25px; font-size: 34px; font-weight: 900; color: var(--logo-color); letter-spacing: 1px; }
     .card-face .photo-wrapper {
         margin-top: 15px; width: 170px; height: 210px; border: 2px solid var(--theme-color-front);
@@ -141,6 +143,7 @@
         font-size: 12px; font-weight: bold; letter-spacing: 1px;
     }
 
+    /* 뒷면 전용 레이아웃 */
     .back-layout { display: flex; flex-direction: row; width: 100%; height: 100%; }
     .back-layout .side-bar { background-color: var(--theme-color-back); display: flex; justify-content: center; align-items: center; width: 60px; }
     .back-layout .side-text { transform: rotate(-90deg); white-space: nowrap; color: var(--bottom-text-color); font-size: 18px; font-weight: 600; }
@@ -161,28 +164,17 @@
     }
     .drag-sticker:active { cursor: grabbing; }
     .drag-sticker img { width: 80px; height: auto; pointer-events: none; }
-    .selected-sticker { border: 2px dashed #ff4757 !important; box-sizing: content-box; border-radius: 8px; }
+    .selected-sticker { border: 2px dashed #ff4757 !important; }
+
+    /* 모바일 UI 결과 오버레이 */
+    #mobileResultOverlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; display:none; flex-direction:column; align-items:center; justify-content:center; padding:20px; box-sizing:border-box; }
 
     @media screen and (max-width: 900px) {
         body { flex-direction: column !important; }
-        .setup-panel { 
-            width: 100% !important; height: 45vh !important; 
-            border-bottom: 2px solid #ddd; padding: 15px 20px; 
-            order: 1 !important; 
-        }
-        .canvas-container { 
-            width: 100% !important; height: 55vh !important; 
-            padding: 10px 0 !important; align-items: flex-start !important; 
-            order: 2 !important; 
-        }
-        #mobileScaleWrapper {
-            transform: scale(0.55); 
-            transform-origin: top center;
-        }
-        .print-area { 
-            flex-direction: row !important; 
-            gap: 20px !important; 
-        }
+        .setup-panel { width: 100% !important; height: 45vh !important; border-bottom: 2px solid #ddd; padding: 15px 20px; order: 1 !important; }
+        .canvas-container { width: 100% !important; height: 55vh !important; padding: 10px 0 !important; align-items: flex-start !important; order: 2 !important; }
+        #mobileScaleWrapper { transform: scale(0.55); transform-origin: top center; }
+        .print-area { flex-direction: row !important; gap: 20px !important; }
     }
 </style>
 </head>
@@ -200,7 +192,6 @@
             <option value="'Jua', sans-serif">Jua (귀여움 1)</option>
             <option value="'Gaegu', cursive">Gaegu (귀여움 2)</option>
         </select>
-        
         <div class="text-edit-panel">
             <label style="font-size:11px; color:#555;">👆 오른쪽 사원증에서 변경할 <b>글씨를 클릭</b>하세요!</label>
             <div class="slider-row"><span class="label">크기</span><input type="range" id="textSizeInput" min="8" max="60" value="14" disabled><span class="value" id="textSizeDisplay">-</span></div>
@@ -213,9 +204,9 @@
     <div class="control-group">
         <label class="title">🔄 뒷면 디자인 타입</label>
         <select id="backTypeSelect" class="custom-select">
-            <option value="type-1">타입 1: 기본 (왼쪽 텍스트 바)</option>
-            <option value="type-2">타입 2: 윗면과 동일 형태 (사진 별도)</option>
-            <option value="type-3">타입 3: 상단 중앙 바 (사진 모양)</option>
+            <option value="type-1">타입 1: 기본 (왼쪽 바)</option>
+            <option value="type-2">타입 2: 윗면과 동일 형태</option>
+            <option value="type-3">타입 3: 상단 중앙 바</option>
         </select>
     </div>
 
@@ -254,7 +245,7 @@
             <div class="color-item"><label>테두리</label><input type="color" id="borderColorBack" value="#cfd4db"></div>
             <div class="color-item"><label>포인트</label><input type="color" id="themeColorBack" value="#a0a5aa"></div>
             <div class="color-item"><label>로고</label><input type="color" id="logoColorBack" value="#4a4d52"></div>
-            <div class="color-item"><label>이름</label><input type="color" id="nameColorBack" value="#111111"></div>
+            <div class="color-item"><label>내용</label><input type="color" id="nameColorBack" value="#111111"></div>
             <div class="color-item"><label>등급</label><input type="color" id="rankColorBack" value="#666666"></div>
             <div class="color-item"><label>바 글씨</label><input type="color" id="bottomTextColorBack" value="#ffffff"></div>
         </div>
@@ -266,26 +257,26 @@
         <label class="title">🚀 스티커 상세 보정</label>
         <div class="sticker-edit-grid">
             <div style="display: flex; flex-direction: column; gap: 12px;">
-                <div class="slider-row"><span class="label">통합 크기</span><input type="range" id="stickerScale" min="10" max="300" value="100"></div>
-                <div class="slider-row"><span class="label">너비반전</span><input type="range" id="stickerScaleX" min="-300" max="300" value="100"></div>
-                <div class="slider-row"><span class="label">높이반전</span><input type="range" id="stickerScaleY" min="-300" max="300" value="100"></div>
-                <div class="slider-row"><span class="label">회전각도</span><input type="range" id="stickerRotate" min="0" max="360" value="0"></div>
+                <div class="slider-row"><span class="label">크기</span><input type="range" id="stickerScale" min="10" max="300" value="100"></div>
+                <div class="slider-row"><span class="label">너비</span><input type="range" id="stickerScaleX" min="-300" max="300" value="100"></div>
+                <div class="slider-row"><span class="label">높이</span><input type="range" id="stickerScaleY" min="-300" max="300" value="100"></div>
+                <div class="slider-row"><span class="label">회전</span><input type="range" id="stickerRotate" min="0" max="360" value="0"></div>
             </div>
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <div class="slider-row"><span class="label">밝기</span><input type="range" id="stickerBrightness" min="0" max="200" value="100"></div>
-                <div class="slider-row"><span class="label">색상변경</span><input type="range" id="stickerHue" min="0" max="360" value="0"></div>
+                <div class="slider-row"><span class="label">색상</span><input type="range" id="stickerHue" min="0" max="360" value="0"></div>
                 <div class="slider-row"><span class="label">투명도</span><input type="range" id="stickerOpacity" min="20" max="100" value="100"></div>
             </div>
         </div>
     </div>
 
     <div class="control-group" style="margin-top: 10px;">
-        <label class="title">✨ 스티커 추가 (클릭 / 드래그 / 더블클릭 삭제)</label>
+        <label class="title">✨ 스티커 추가</label>
         <div class="sticker-container">
             <div class="sticker-buttons">
                 <label class="custom-sticker-label">+ 내 사진 추가<input type="file" id="customStickerInput" accept="image/*" style="display:none;"></label>
                 <script>
-                    const emojis = ['🍋','💞','🐽','🐖','😇','💢','💘','🦴','🗨️','💋','👆','🪻','🍰','☁️','☀️','⚡','❄️','🍊','🍑','🌻','🧀','🍫','🎀','🕶️','🎵','🧸','🍓','👑','🪽','🐈‍⬛','🐈','🦊','🐶','😊','🐬','🐾','🐤','🐸','🫧','🍬','🍭','🐱','🦋','🥭','🍎','🐰','🌸','🌹','🌼','🌟','⭐','🌈','🔥','💧','🌿','🌪️','🧊','❤️','✨','🍒'];
+                    const emojis = ['🍋','💞','🐽','😇','💢','💘','👆','🍰','☀️','❄️','🍑','🌻','🍫','🎀','🧸','🍓','👑','🐈','🦊','😊','🐾','🫧','🐱','🦋','🍎','🐰','🌸','🌟','🌈','🔥','💧','❤️','✨','🍒'];
                     emojis.forEach(e => document.write(`<button onclick="addEmojiSticker('${e}')">${e}</button>`));
                 </script>
             </div>
@@ -307,37 +298,40 @@
                 </div>
                 <div class="bottom-bar selectable-text" contenteditable="true">HARMONY DIV.</div>
             </div>
-
             <div class="id-card" id="cardBack">
                 <div class="back-layout type-1">
                     <div class="side-bar"><div class="side-text selectable-text" contenteditable="true">■ Kim cherry mango</div></div>
-                    <div class="content">
-                        <div class="notice selectable-text" contenteditable="true">| 주의사항</div>
-                        <p class="selectable-text" contenteditable="true">사원증은 항상 소지해야 합니다.<br>타인에게 양도·대여할 수 없습니다.<br>분실 시 재발급을 받아야 합니다.<br><br></p>
-                    </div>
+                    <div class="content"><div class="notice selectable-text" contenteditable="true">| 주의사항</div><p class="selectable-text" contenteditable="true">사원증은 항상 소지해야 합니다.<br>타인에게 양도·대여할 수 없습니다.<br>분실 시 재발급을 받아야 합니다.<br><br></p></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<div id="mobileResultOverlay">
+    <div style="color:white; font-size:18px; font-weight:bold; margin-bottom:15px; text-align:center;">✅ 사원증 생성 완료!<br><span style="font-size:13px; font-weight:normal; color:#ffd32a;">이미지를 꾹 눌러서 '저장' 하세요.</span></div>
+    <img id="resultImage" style="max-width:100%; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+    <button onclick="document.getElementById('mobileResultOverlay').style.display='none'" style="margin-top:20px; padding:12px 24px; background:#fff; color:#333; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">창 닫기</button>
+</div>
+
 <script>
     const root = document.documentElement.style;
     const printArea = document.getElementById('idCardSet');
     let selectedSticker = null, selectedText = null; 
-    let fPhoto = "", bPhoto = ""; // 사진 데이터 보관용
+    let fPhoto = "", bPhoto = ""; // 사진 데이터 백업용
 
+    // --- 글꼴 변경 ---
     document.getElementById('fontSelect').addEventListener('change', function(e) {
         printArea.style.fontFamily = e.target.value;
         this.style.fontFamily = e.target.value;
     });
 
+    // --- 뒷면 디자인 변경 (사진 상태 유지) ---
     document.getElementById('backTypeSelect').addEventListener('change', function(e) {
         const type = e.target.value;
         const cardBack = document.getElementById('cardBack');
         const backPhotoUploadContainer = document.getElementById('backPhotoUploadContainer');
         clearSelections();
-
         if (type === 'type-1') {
             cardBack.className = 'id-card';
             cardBack.innerHTML = `<div class="back-layout type-1"><div class="side-bar"><div class="side-text selectable-text" contenteditable="true">■ Kim cherry mango</div></div><div class="content"><div class="notice selectable-text" contenteditable="true">| 주의사항</div><p class="selectable-text" contenteditable="true">사원증은 항상 소지해야 합니다.<br>타인에게 양도·대여할 수 없습니다.<br>분실 시 재발급을 받아야 합니다.<br><br></p></div></div>`;
@@ -354,9 +348,7 @@
         }
     });
 
-    const textSizeInput = document.getElementById('textSizeInput');
-    const textWeightInput = document.getElementById('textWeightInput');
-
+    const textSizeInput = document.getElementById('textSizeInput'), textWeightInput = document.getElementById('textWeightInput');
     textSizeInput.addEventListener('input', function(e) { if (selectedText) { selectedText.style.fontSize = e.target.value + 'px'; document.getElementById('textSizeDisplay').innerText = e.target.value; }});
     textWeightInput.addEventListener('input', function(e) { if (selectedText) { selectedText.style.fontWeight = e.target.value; document.getElementById('textWeightDisplay').innerText = e.target.value; }});
 
@@ -374,8 +366,7 @@
             ['Scale','ScaleX','ScaleY','Rotate','Brightness','Hue','Opacity'].forEach(k => document.getElementById('sticker'+k).value = s.dataset[k.toLowerCase()] || 100);
         } else if (t) {
             selectedText = t; t.classList.add('selected-text');
-            textSizeInput.value = parseInt(window.getComputedStyle(t).fontSize);
-            textWeightInput.value = window.getComputedStyle(t).fontWeight;
+            textSizeInput.value = parseInt(window.getComputedStyle(t).fontSize); textWeightInput.value = window.getComputedStyle(t).fontWeight;
             textSizeInput.disabled = textWeightInput.disabled = false;
         }
     });
@@ -383,8 +374,7 @@
     function fitImage(img) {
         if(!img || !img.src) return;
         const ratio = img.naturalWidth / img.naturalHeight;
-        if (ratio > 170/210) { img.style.width = 'auto'; img.style.height = '100%'; } 
-        else { img.style.width = '100%'; img.style.height = 'auto'; }
+        if (ratio > 170/210) { img.style.width = 'auto'; img.style.height = '100%'; } else { img.style.width = '100%'; img.style.height = 'auto'; }
     }
 
     function processImage(file, targetId, isFront) {
@@ -416,6 +406,7 @@
         ['scale','scalex','scaley','rotate','hue','opacity','brightness'].forEach(k => s.dataset[k] = k==='rotate'||k==='hue'?0:100);
         s.ondblclick = () => s.remove(); printArea.appendChild(s); makeDraggable(s);
     }
+
     document.getElementById('customStickerInput').addEventListener('change', function(e) {
         if(!e.target.files[0]) return;
         const reader = new FileReader();
@@ -445,28 +436,45 @@
     const colorIds = ['bgColorFront','borderColorFront','themeColorFront','logoColorFront','nameColorFront','rankColorFront','bottomTextColorFront','bgColorBack','borderColorBack','themeColorBack','logoColorBack','nameColorBack','rankColorBack','bottomTextColorBack'];
     colorIds.forEach(id => document.getElementById(id).addEventListener('input', e => root.setProperty('--'+id.replace(/[A-Z]/g, m=>'-'+m.toLowerCase()), e.target.value)));
 
-    // ★ 모바일 저장 오류 해결 (Two-Pass 렌더링 적용) ★
-    function saveCard() {
+    // ★ 모바일 저장 사진 날아감 버그 해결 핵심 로직 ★
+    async function saveCard() {
         clearSelections();
+        const btn = document.getElementById('saveActionBtn');
         const wrapper = document.getElementById('mobileScaleWrapper');
         const isMobile = window.innerWidth <= 900;
-        if(isMobile) wrapper.style.transform = 'scale(1)';
+        
+        btn.innerText = "⏳ 생성 중..."; btn.disabled = true;
+
+        // 1. 모든 이미지 태그가 캡처 준비가 되었는지 확실히 함 (Decoding)
+        const allImgs = printArea.querySelectorAll('img');
+        for (let img of allImgs) { if (img.src) try { await img.decode(); } catch(e) {} }
+
+        // 2. 모바일일 경우 캡처 순간에만 원본 크기로 복구
+        if (isMobile) wrapper.style.transform = 'scale(1)';
 
         setTimeout(() => {
-            const options = { pixelRatio: 3, cacheBust: true, useCORS: true };
-            // 모바일 이미지 증발 방지를 위해 빈 캡처 1회 선행 후 진짜 캡처 실행
-            htmlToImage.toPng(printArea, options)
-                .then(() => htmlToImage.toPng(printArea, options))
+            const captureOptions = { pixelRatio: 3, cacheBust: true, useCORS: true };
+            
+            // 3. 모바일 브라우저의 렌더링 지연을 막기 위해 2중 캡처 수행
+            htmlToImage.toPng(printArea, captureOptions)
+                .then(() => htmlToImage.toPng(printArea, captureOptions))
                 .then(dataUrl => {
-                    if(isMobile) wrapper.style.transform = 'scale(0.55)';
-                    const link = document.createElement('a');
-                    link.download = 'ARCH_ID.png'; link.href = dataUrl; link.click();
+                    if (isMobile) {
+                        wrapper.style.transform = 'scale(0.55)';
+                        document.getElementById('resultImage').src = dataUrl;
+                        document.getElementById('mobileResultOverlay').style.display = 'flex';
+                    } else {
+                        const link = document.createElement('a');
+                        link.download = 'ARCH_사원증.png'; link.href = dataUrl; link.click();
+                    }
+                    btn.innerText = "사원증 이미지로 저장하기"; btn.disabled = false;
                 })
                 .catch(() => {
-                    if(isMobile) wrapper.style.transform = 'scale(0.55)';
-                    alert("저장 중 오류가 발생했습니다.");
+                    if (isMobile) wrapper.style.transform = 'scale(0.55)';
+                    alert("이미지 처리 중 오류가 발생했습니다. 브라우저 캐시를 삭제하고 다시 시도해주세요.");
+                    btn.disabled = false;
                 });
-        }, 300);
+        }, 500); // 넉넉하게 대기 시간을 주어 사진이 메모리에 완전히 로드되게 함
     }
 </script>
 </body>
