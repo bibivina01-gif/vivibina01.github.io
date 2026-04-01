@@ -1042,53 +1042,48 @@
         }
     }
 
-    // ★ 모바일 저장 오류/화질 저하 완벽 해결 ★
+    // ★ 모바일 저장 오류/화질 저하 및 폰트 풀림 완벽 해결 ★
     function saveCard() {
         clearSelections(); 
 
         const area = document.getElementById('idCardSet');
         const isMobile = window.innerWidth <= 900;
+        const currentFont = document.getElementById('fontSelect').value;
         
-        // PC 설정은 그대로 유지 (pixelRatio: 3), 모바일은 훨씬 더 선명하게 (pixelRatio: 4)
+        // PC는 그대로 유지 (pixelRatio: 3), 모바일은 초고화질 보장 (pixelRatio: 4)
+        // 캡처용 가상 복제본에만 크기 복구(scale(1))와 폰트를 강제 적용하여 폰트 풀림 현상을 완벽히 차단!
         const options = { 
             pixelRatio: isMobile ? 4 : 3, 
             useCORS: true, 
-            cacheBust: true 
+            cacheBust: true,
+            style: isMobile ? {
+                transform: 'scale(1)',
+                transformOrigin: 'top left',
+                fontFamily: currentFont // 모바일에서 폰트 깨짐 방지용 강제 주입
+            } : {
+                fontFamily: currentFont // PC에서도 혹시 모를 버그 방지용 주입
+            }
         };
 
-        // 모바일일 경우: 화면에 작게 쪼그라든 캔버스를 캡처 직전에만 100% 원본 크기로 강제 확대!
-        if (isMobile) {
-            area.style.transform = 'scale(1)';
-        }
-
-        // 크기가 커진 상태가 화면에 반영될 수 있도록 아주 잠깐(0.1초) 대기 후 캡처 진행
-        setTimeout(() => {
-            // 1차 렌더링 (모바일 화면 로드 지연 방지용 빈 캡처)
-            htmlToImage.toPng(area, options)
-                .then(function () {
-                    // 약간의 지연 후 2차 최종 렌더링 (이미지 증발 방지)
-                    setTimeout(() => {
-                        htmlToImage.toPng(area, options)
-                            .then(function (dataUrl) {
-                                // 캡처가 끝나면 아무 일도 없었다는 듯 다시 원래 모바일 축소 화면으로 즉시 복구!
-                                if (isMobile) area.style.transform = '';
-
-                                const link = document.createElement('a');
-                                link.download = 'ARCH_사원증.png';
-                                link.href = dataUrl;
-                                link.click();
-                            })
-                            .catch(function (error) {
-                                if (isMobile) area.style.transform = '';
-                                alert("저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
-                            });
-                    }, 150);
-                })
-                .catch(function (error) {
-                    if (isMobile) area.style.transform = '';
-                    alert("이미지 처리 중 오류가 발생했습니다.");
-                });
-        }, 100);
+        // 폰트 로드 웜업 및 최종 캡처를 위한 2중 렌더링
+        htmlToImage.toPng(area, options)
+            .then(function () {
+                setTimeout(() => {
+                    htmlToImage.toPng(area, options)
+                        .then(function (dataUrl) {
+                            const link = document.createElement('a');
+                            link.download = 'ARCH_사원증.png';
+                            link.href = dataUrl;
+                            link.click();
+                        })
+                        .catch(function (error) {
+                            alert("저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+                        });
+                }, 200); // 폰트 로딩 대기 시간 확보
+            })
+            .catch(function (error) {
+                alert("이미지 처리 중 오류가 발생했습니다.");
+            });
     }
 </script>
 
