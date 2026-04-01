@@ -2,13 +2,13 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ARCH 사원증 메이커</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&family=Noto+Serif+KR:wght@300;400;700&family=Playfair+Display:wght@700&family=Cinzel:wght@700&family=Jua&family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/galmuri/dist/galmuri.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
 <style>
     :root {
-        /* 앞면 전용 색상 변수 */
         --bg-color-front: #ffffff;
         --border-color-front: #cfd4db;
         --theme-color-front: #a0a5aa; 
@@ -17,7 +17,6 @@
         --rank-color-front: #666666;
         --bottom-text-color-front: #ffffff;
 
-        /* 뒷면 전용 색상 변수 */
         --bg-color-back: #ffffff;
         --border-color-back: #cfd4db;
         --theme-color-back: #a0a5aa; 
@@ -27,7 +26,6 @@
         --bottom-text-color-back: #ffffff;
     }
 
-    /* 카드 앞면에 변수 매핑 */
     #cardFront {
         --bg-color: var(--bg-color-front);
         --border-color: var(--border-color-front);
@@ -38,7 +36,6 @@
         --bottom-text-color: var(--bottom-text-color-front);
     }
 
-    /* 카드 뒷면에 변수 매핑 */
     #cardBack {
         --bg-color: var(--bg-color-back);
         --border-color: var(--border-color-back);
@@ -49,6 +46,7 @@
         --bottom-text-color: var(--bottom-text-color-back);
     }
 
+    /* ★ PC 기본 레이아웃 (좌측 바, 우측 사원증) ★ */
     body {
         display: flex;
         flex-direction: row; 
@@ -59,7 +57,6 @@
         padding: 0; 
     }
 
-    /* 설정 패널 */
     .setup-panel {
         background: white;
         padding: 25px 30px; 
@@ -74,7 +71,6 @@
         z-index: 10;
     }
 
-    /* 사원증이 보여지는 오른쪽 영역 */
     .canvas-container {
         flex: 1; 
         display: flex;
@@ -84,389 +80,152 @@
         padding: 20px;
     }
 
-    .control-group {
+    #mobileScaleWrapper {
         display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .control-group label.title {
-        font-size: 14px;
-        font-weight: 800;
-        color: #333;
-    }
-
-    /* 글꼴 & 타입 선택 드롭다운 스타일 */
-    select.custom-select {
-        padding: 8px;
-        border: 1px solid #ced4da;
-        border-radius: 6px;
-        font-size: 16px;
-        cursor: pointer;
-        font-family: 'Noto Sans KR', sans-serif; 
-    }
-
-    /* 색상 설정 4열 배치 */
-    .color-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr); 
-        gap: 10px;
-        background: #f8f9fa;
-        padding: 15px;
-        border-radius: 8px;
-        border: 1px solid #eee;
-    }
-    
-    .color-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 5px;
-    }
-    
-    .color-item label {
-        font-size: 11px;
-        font-weight: bold;
-        color: #555;
-        white-space: nowrap;
-    }
-
-    /* 개별 글씨 선택 스타일 */
-    .selectable-text {
-        cursor: pointer;
-        transition: outline 0.1s;
-    }
-    .selected-text {
-        outline: 2px dashed #0984e3 !important;
-        outline-offset: 4px;
-        border-radius: 2px;
-    }
-
-    /* 텍스트 조절 패널 */
-    .text-edit-panel {
-        background: #f1f3f5; 
-        padding: 15px; 
-        border-radius: 8px; 
-        margin-top: 5px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .slider-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .slider-row span.label {
-        font-size: 12px;
-        font-weight: bold;
-        width: 45px; 
-        color: #444;
-    }
-
-    .slider-row span.value {
-        font-size: 11px;
-        width: 30px;
-        text-align: right;
-        color: #666;
-    }
-
-    /* 스티커 조절 패널 */
-    .sticker-edit-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px; 
-        background: #f8f9fa;
-        padding: 15px;
-        border-radius: 8px;
-        border: 1px solid #eee;
-    }
-
-    /* 스티커 버튼 영역 스타일 */
-    .sticker-container {
-        max-height: 140px; 
-        overflow-y: auto; 
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        padding: 10px;
-        background: #f8f9fa;
-    }
-    
-    .sticker-buttons {
-        display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
-    }
-    .sticker-buttons button, .custom-sticker-label {
-        padding: 5px 8px;
-        background-color: #ffffff;
-        border: 1px solid #ced4da;
-        border-radius: 6px;
-        font-size: 18px;
-        cursor: pointer;
-        transition: 0.2s;
-        display: inline-flex;
-        align-items: center;
         justify-content: center;
-        color: #333; 
-    }
-    .sticker-buttons button:hover, .custom-sticker-label:hover {
-        background-color: #e2e6ea;
-        transform: scale(1.1);
-    }
-    .custom-sticker-label {
-        font-size: 13px;
-        font-weight: bold;
-        padding: 5px 12px;
-    }
-
-    /* 슬라이더 공통 스타일 */
-    input[type="range"] {
-        flex: 1; 
-        cursor: pointer;
-    }
-
-    input[type="color"] {
+        align-items: center;
         width: 100%;
-        height: 30px; 
-        border: none;
-        border-radius: 4px;
-        padding: 0;
-        cursor: pointer;
+        transition: transform 0s;
     }
+
+    .control-group { display: flex; flex-direction: column; gap: 8px; }
+    .control-group label.title { font-size: 14px; font-weight: 800; color: #333; }
+
+    select.custom-select {
+        padding: 8px; border: 1px solid #ced4da; border-radius: 6px;
+        font-size: 16px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; 
+    }
+
+    .color-grid {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+        background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee;
+    }
+    .color-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .color-item label { font-size: 11px; font-weight: bold; color: #555; white-space: nowrap; }
+
+    .selectable-text { cursor: pointer; transition: outline 0.1s; }
+    .selected-text { outline: 2px dashed #0984e3 !important; outline-offset: 4px; border-radius: 2px; }
+
+    .text-edit-panel { background: #f1f3f5; padding: 15px; border-radius: 8px; margin-top: 5px; display: flex; flex-direction: column; gap: 10px; }
+    .slider-row { display: flex; align-items: center; gap: 10px; }
+    .slider-row span.label { font-size: 12px; font-weight: bold; width: 45px; color: #444; }
+    .slider-row span.value { font-size: 11px; width: 30px; text-align: right; color: #666; }
+
+    .sticker-edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
+    .sticker-container { max-height: 140px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px; background: #f8f9fa; }
+    .sticker-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+    .sticker-buttons button, .custom-sticker-label {
+        padding: 5px 8px; background-color: #ffffff; border: 1px solid #ced4da; border-radius: 6px;
+        font-size: 18px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; color: #333; 
+    }
+    .sticker-buttons button:hover, .custom-sticker-label:hover { background-color: #e2e6ea; transform: scale(1.1); }
+    .custom-sticker-label { font-size: 13px; font-weight: bold; padding: 5px 12px; }
+
+    input[type="range"] { flex: 1; cursor: pointer; }
+    input[type="color"] { width: 100%; height: 30px; border: none; border-radius: 4px; padding: 0; cursor: pointer; }
     input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
     input[type="color"]::-webkit-color-swatch { border: 1px solid #ddd; border-radius: 4px; }
-    
     input[type="file"], button { cursor: pointer; }
 
     .save-btn {
-        padding: 16px;
-        background-color: #4a4d52;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: bold;
-        transition: 0.2s;
-        margin-top: 15px;
-        margin-bottom: 20px;
+        padding: 16px; background-color: #4a4d52; color: white; border: none; border-radius: 8px;
+        font-size: 16px; font-weight: bold; transition: 0.2s; margin-top: 15px; margin-bottom: 20px;
     }
     .save-btn:hover { background-color: #1a252f; }
 
     /* 사원증 출력 영역 */
     .print-area {
-        display: flex;
-        gap: 30px;
-        padding: 20px;
-        background: transparent;
-        position: relative;
+        display: flex; flex-direction: row; gap: 30px; padding: 20px; background: transparent; position: relative;
     }
 
     .id-card {
-        width: 280px;
-        height: 440px;
-        background-color: var(--bg-color);
-        border-radius: 12px;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        border: 1.5px solid var(--border-color);
-        flex-shrink: 0;
+        width: 280px; height: 440px; background-color: var(--bg-color); border-radius: 12px;
+        position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        display: flex; flex-direction: column; align-items: center; border: 1.5px solid var(--border-color); flex-shrink: 0;
     }
 
-    /* 앞면 공통 디자인 요소 (뒷면이 타입 2일 때도 사용) */
-    .card-face .logo {
-        margin-top: 25px;
-        font-size: 34px;
-        font-weight: 900; 
-        color: var(--logo-color);
-        letter-spacing: 1px;
-    }
-
+    /* 앞면 공통 디자인 요소 */
+    .card-face .logo { margin-top: 25px; font-size: 34px; font-weight: 900; color: var(--logo-color); letter-spacing: 1px; }
     .card-face .photo-wrapper {
-        margin-top: 15px;
-        width: 170px;
-        height: 210px;
-        border: 2px solid var(--theme-color-front);
-        padding: 3px;
-        box-sizing: border-box;
-        background-color: var(--bg-color);
-        position: relative;
-        overflow: hidden;
+        margin-top: 15px; width: 170px; height: 210px; border: 2px solid var(--theme-color-front);
+        padding: 3px; box-sizing: border-box; background-color: var(--bg-color); position: relative; overflow: hidden;
     }
-
-    .card-face .photo-wrapper img {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: #eee;
-    }
-
-    .card-face .info-text {
-        margin-top: 15px;
-        text-align: center;
-    }
-
-    .card-face .name {
-        font-size: 26px;
-        font-weight: 600;
-        color: var(--name-color);
-        letter-spacing: 5px;
-        margin-bottom: 5px;
-    }
-
-    .card-face .rank {
-        font-size: 14px;
-        color: var(--rank-color);
-    }
-
+    .card-face .photo-wrapper img { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #eee; }
+    .card-face .info-text { margin-top: 15px; text-align: center; }
+    .card-face .name { font-size: 26px; font-weight: 600; color: var(--name-color); letter-spacing: 5px; margin-bottom: 5px; }
+    .card-face .rank { font-size: 14px; color: var(--rank-color); }
     .card-face .bottom-bar {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        height: 35px;
-        background-color: var(--theme-color-front);
-        color: var(--bottom-text-color);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 12px;
-        font-weight: bold;
-        letter-spacing: 1px;
+        position: absolute; bottom: 0; width: 100%; height: 35px; background-color: var(--theme-color-front);
+        color: var(--bottom-text-color); display: flex; justify-content: center; align-items: center;
+        font-size: 12px; font-weight: bold; letter-spacing: 1px;
     }
 
-    /* 뒷면 전용 레이아웃 (타입 1 용 - 기존 왼쪽 바) */
+    /* 뒷면 전용 레이아웃 (타입 1 용 - 왼쪽 바) */
     .back-layout { display: flex; flex-direction: row; width: 100%; height: 100%; }
-    .back-layout .side-bar {
-        background-color: var(--theme-color-back);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 60px;
-    }
-    .back-layout .side-text {
-        transform: rotate(-90deg);
-        white-space: nowrap;
-        color: var(--bottom-text-color);
-        font-size: 18px; 
-        font-weight: 600;
-    }
-    .back-layout .content {
-        flex: 1;
-        padding: 40px 20px;
-    }
-    .back-layout .content .notice {
-        color: var(--theme-color-back);
-        font-size: 14px; 
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
+    .back-layout .side-bar { background-color: var(--theme-color-back); display: flex; justify-content: center; align-items: center; width: 60px; }
+    .back-layout .side-text { transform: rotate(-90deg); white-space: nowrap; color: var(--bottom-text-color); font-size: 18px; font-weight: 600; }
+    .back-layout .content { flex: 1; padding: 40px 20px; }
+    .back-layout .content .notice { color: var(--theme-color-back); font-size: 14px; font-weight: bold; margin-bottom: 10px; }
     .back-layout .content p { font-size: 12px; color: var(--name-color); line-height: 1.8; margin: 0; opacity: 0.8; }
 
     /* 뒷면 전용 레이아웃 (타입 3 용 - 상단 중앙 바) */
-    .back-layout-center {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        height: 100%;
-        align-items: center;
-    }
+    .back-layout-center { display: flex; flex-direction: column; width: 100%; height: 100%; align-items: center; }
     .back-layout-center .top-bar {
-        width: 60px;
-        height: 240px; 
-        background-color: var(--theme-color-back);
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        width: 60px; height: 240px; background-color: var(--theme-color-back); display: flex; justify-content: center; align-items: center;
     }
-    .back-layout-center .top-text {
-        transform: rotate(-90deg);
-        white-space: nowrap;
-        color: var(--bottom-text-color);
-        font-size: 18px; 
-        font-weight: 600;
-    }
+    .back-layout-center .top-text { transform: rotate(-90deg); white-space: nowrap; color: var(--bottom-text-color); font-size: 18px; font-weight: 600; }
     .back-layout-center .bottom-content {
-        width: 100%;
-        flex: 1;
-        padding: 30px 40px; 
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
+        width: 100%; flex: 1; padding: 30px 40px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start;
     }
-    .back-layout-center .bottom-content .notice {
-        color: var(--theme-color-back);
-        font-size: 14px; 
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-    .back-layout-center .bottom-content p {
-        font-size: 12px;
-        color: var(--name-color);
-        line-height: 1.8;
-        margin: 0;
-        opacity: 0.8;
-    }
+    .back-layout-center .bottom-content .notice { color: var(--theme-color-back); font-size: 14px; font-weight: bold; margin-bottom: 10px; }
+    .back-layout-center .bottom-content p { font-size: 12px; color: var(--name-color); line-height: 1.8; margin: 0; opacity: 0.8; }
 
-    /* 드래그 가능한 스티커 스타일 */
+    /* 스티커 스타일 (touch-action 추가로 스크롤 방지) */
     .drag-sticker {
-        position: absolute;
-        cursor: grab;
-        user-select: none;
-        z-index: 999; 
-        font-size: 35px; 
-        title: "더블클릭하면 삭제됩니다!";
-        transition: filter 0.1s, transform 0.1s; 
+        position: absolute; cursor: grab; user-select: none; touch-action: none;
+        z-index: 999; font-size: 35px; transition: filter 0.1s, transform 0.1s; 
     }
     .drag-sticker:active { cursor: grabbing; }
-    .drag-sticker img {
-        width: 80px; 
-        height: auto;
-        pointer-events: none; 
-    }
-    .selected-sticker {
-        border: 2px dashed #ff4757 !important; 
-        box-sizing: content-box; 
-        border-radius: 8px;
-    }
+    .drag-sticker img { width: 80px; height: auto; pointer-events: none; }
+    .selected-sticker { border: 2px dashed #ff4757 !important; box-sizing: content-box; border-radius: 8px; }
 
-    /* ★ 모바일 환경 레이아웃 조정 (PC 원본 보존 / 모바일 전용 UI) ★ */
-    @media (max-width: 900px) {
-        body { flex-direction: column; }
+    /* ★ 모바일 환경 레이아웃 전용 조작 (PC에는 절대 영향 없음) ★ */
+    @media screen and (max-width: 900px) {
+        body { flex-direction: column !important; }
         .setup-panel { 
-            width: 100%; 
-            height: 45vh; 
-            border-bottom: 2px solid #ddd;
+            width: 100% !important; height: 45vh !important; 
+            border-bottom: 2px solid #ddd; padding: 15px 20px; 
+            order: 1 !important; 
         }
         .canvas-container { 
-            width: 100%; 
-            height: 55vh; 
-            padding: 0; 
-            overflow: hidden; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100% !important; height: 55vh !important; 
+            padding: 10px 0 !important; align-items: flex-start !important; 
+            order: 2 !important; 
+        }
+        #mobileScaleWrapper {
+            transform: scale(0.55); /* 폰 화면에 쏙 들어가게 축소 */
+            transform-origin: top center;
         }
         .print-area { 
-            flex-direction: row !important; /* 모바일에서도 무조건 나란히! */
-            transform: scale(0.55); /* 폰 화면에 쏙 들어가게 축소 */
-            transform-origin: center center;
-            gap: 20px;
+            flex-direction: row !important; /* 모바일에서도 무조건 나란히(가로) 배치! */
+            gap: 20px !important; 
         }
     }
 </style>
 </head>
 <body>
 
+<div style="position: absolute; top: -9999px; left: -9999px; visibility: hidden;">
+    <span style="font-family: 'Noto Sans KR';">preload</span>
+    <span style="font-family: 'Noto Serif KR';">preload</span>
+    <span style="font-family: 'Playfair Display';">preload</span>
+    <span style="font-family: 'Cinzel';">preload</span>
+    <span style="font-family: 'Galmuri9';">preload</span>
+    <span style="font-family: 'Jua';">preload</span>
+    <span style="font-family: 'Gaegu';">preload</span>
+</div>
+
 <div class="setup-panel">
-    
     <div class="control-group">
         <label class="title">✨ 전체 폰트 및 개별 글씨 설정</label>
         <select id="fontSelect" class="custom-select">
@@ -481,7 +240,7 @@
         
         <div class="text-edit-panel">
             <label style="font-size:11px; color:#555;">
-                👆 오른쪽 사원증에서 변경할 <b>글씨를 마우스로 클릭</b>하세요!
+                👆 오른쪽 사원증에서 변경할 <b>글씨를 클릭</b>하세요!
             </label>
             <div class="slider-row">
                 <span class="label">크기</span>
@@ -544,9 +303,9 @@
             <div class="color-item"><label>바탕</label><input type="color" id="bgColorBack" value="#ffffff"></div>
             <div class="color-item"><label>테두리</label><input type="color" id="borderColorBack" value="#cfd4db"></div>
             <div class="color-item"><label>포인트(바)</label><input type="color" id="themeColorBack" value="#a0a5aa"></div>
-            <div class="color-item"><label>로고(타입2)</label><input type="color" id="logoColorBack" value="#4a4d52"></div>
+            <div class="color-item"><label>로고</label><input type="color" id="logoColorBack" value="#4a4d52"></div>
             <div class="color-item"><label>이름/내용</label><input type="color" id="nameColorBack" value="#111111"></div>
-            <div class="color-item"><label>등급(타입2)</label><input type="color" id="rankColorBack" value="#666666"></div>
+            <div class="color-item"><label>등급</label><input type="color" id="rankColorBack" value="#666666"></div>
             <div class="color-item"><label>바 글씨</label><input type="color" id="bottomTextColorBack" value="#ffffff"></div>
         </div>
     </div>
@@ -557,36 +316,15 @@
         <label class="title">🚀 스티커 상세 보정</label>
         <div class="sticker-edit-grid">
             <div style="display: flex; flex-direction: column; gap: 12px;">
-                <div class="slider-row">
-                    <span class="label">통합 크기</span>
-                    <input type="range" id="stickerScale" min="10" max="300" value="100">
-                </div>
-                <div class="slider-row">
-                    <span class="label">너비반전</span>
-                    <input type="range" id="stickerScaleX" min="-300" max="300" value="100">
-                </div>
-                <div class="slider-row">
-                    <span class="label">높이반전</span>
-                    <input type="range" id="stickerScaleY" min="-300" max="300" value="100">
-                </div>
-                <div class="slider-row">
-                    <span class="label">회전각도</span>
-                    <input type="range" id="stickerRotate" min="0" max="360" value="0">
-                </div>
+                <div class="slider-row"><span class="label">통합 크기</span><input type="range" id="stickerScale" min="10" max="300" value="100"></div>
+                <div class="slider-row"><span class="label">너비반전</span><input type="range" id="stickerScaleX" min="-300" max="300" value="100"></div>
+                <div class="slider-row"><span class="label">높이반전</span><input type="range" id="stickerScaleY" min="-300" max="300" value="100"></div>
+                <div class="slider-row"><span class="label">회전각도</span><input type="range" id="stickerRotate" min="0" max="360" value="0"></div>
             </div>
             <div style="display: flex; flex-direction: column; gap: 12px;">
-                <div class="slider-row">
-                    <span class="label">밝기</span>
-                    <input type="range" id="stickerBrightness" min="0" max="200" value="100">
-                </div>
-                <div class="slider-row">
-                    <span class="label">색상변경</span>
-                    <input type="range" id="stickerHue" min="0" max="360" value="0">
-                </div>
-                <div class="slider-row">
-                    <span class="label">투명도</span>
-                    <input type="range" id="stickerOpacity" min="20" max="100" value="100">
-                </div>
+                <div class="slider-row"><span class="label">밝기</span><input type="range" id="stickerBrightness" min="0" max="200" value="100"></div>
+                <div class="slider-row"><span class="label">색상변경</span><input type="range" id="stickerHue" min="0" max="360" value="0"></div>
+                <div class="slider-row"><span class="label">투명도</span><input type="range" id="stickerOpacity" min="20" max="100" value="100"></div>
             </div>
         </div>
     </div>
@@ -595,72 +333,11 @@
         <label class="title">✨ 스티커 추가 (클릭 / 드래그 / 더블클릭 삭제)</label>
         <div class="sticker-container">
             <div class="sticker-buttons">
-                <label class="custom-sticker-label">
-                    + 내 사진 추가
-                    <input type="file" id="customStickerInput" accept="image/*" style="display:none;">
-                </label>
-                <button onclick="addEmojiSticker('🍋')">🍋</button>
-                <button onclick="addEmojiSticker('👻')">👻</button>
-                <button onclick="addEmojiSticker('💞')">💞</button>
-                <button onclick="addEmojiSticker('🐽')">🐽</button>
-                <button onclick="addEmojiSticker('🐖')">🐖</button>
-                <button onclick="addEmojiSticker('😇')">😇</button>
-                <button onclick="addEmojiSticker('💢')">💢</button>
-                <button onclick="addEmojiSticker('💘')">💘</button>
-                <button onclick="addEmojiSticker('🦴')">🦴</button>
-                <button onclick="addEmojiSticker('🗨️')">🗨️</button>
-                <button onclick="addEmojiSticker('💋')">💋</button>
-                <button onclick="addEmojiSticker('👆')">👆</button>
-                <button onclick="addEmojiSticker('🪻')">🪻</button>
-                <button onclick="addEmojiSticker('🍰')">🍰</button>
-                <button onclick="addEmojiSticker('☁️')">☁️</button>
-                <button onclick="addEmojiSticker('🌙')">🌙</button>
-                <button onclick="addEmojiSticker('☀️')">☀️</button>
-                <button onclick="addEmojiSticker('⚡')">⚡</button>
-                <button onclick="addEmojiSticker('❄️')">❄️</button>
-                <button onclick="addEmojiSticker('🍊')">🍊</button>
-                <button onclick="addEmojiSticker('🍑')">🍑</button>
-                <button onclick="addEmojiSticker('🌻')">🌻</button>
-                <button onclick="addEmojiSticker('🧀')">🧀</button>
-                <button onclick="addEmojiSticker('🍫')">🍫</button>
-                <button onclick="addEmojiSticker('🎀')">🎀</button>
-                <button onclick="addEmojiSticker('🕶️')">🕶️</button>
-                <button onclick="addEmojiSticker('🎵')">🎵</button>
-                <button onclick="addEmojiSticker('🧸')">🧸</button>
-                <button onclick="addEmojiSticker('🍓')">🍓</button>
-                <button onclick="addEmojiSticker('👑')">👑</button>
-                <button onclick="addEmojiSticker('🪽')">🪽</button>
-                <button onclick="addEmojiSticker('🐈‍⬛')">🐈‍⬛</button>
-                <button onclick="addEmojiSticker('🐈')">🐈</button>
-                <button onclick="addEmojiSticker('🦊')">🦊</button>
-                <button onclick="addEmojiSticker('🐶')">🐶</button>
-                <button onclick="addEmojiSticker('😊')">😊</button>
-                <button onclick="addEmojiSticker('🐬')">🐬</button>
-                <button onclick="addEmojiSticker('🐾')">🐾</button>
-                <button onclick="addEmojiSticker('🐤')">🐤</button>
-                <button onclick="addEmojiSticker('🐸')">🐸</button>
-                <button onclick="addEmojiSticker('🫧')">🫧</button>
-                <button onclick="addEmojiSticker('🍬')">🍬</button>
-                <button onclick="addEmojiSticker('🍭')">🍭</button>
-                <button onclick="addEmojiSticker('🐱')">🐱</button>
-                <button onclick="addEmojiSticker('🦋')">🦋</button>
-                <button onclick="addEmojiSticker('🥭')">🥭</button>
-                <button onclick="addEmojiSticker('🍎')">🍎</button>
-                <button onclick="addEmojiSticker('🐰')">🐰</button>
-                <button onclick="addEmojiSticker('🌸')">🌸</button>
-                <button onclick="addEmojiSticker('🌹')">🌹</button>
-                <button onclick="addEmojiSticker('🌼')">🌼</button>
-                <button onclick="addEmojiSticker('🌟')">🌟</button>
-                <button onclick="addEmojiSticker('⭐')">⭐</button>
-                <button onclick="addEmojiSticker('🌈')">🌈</button>
-                <button onclick="addEmojiSticker('🔥')">🔥</button>
-                <button onclick="addEmojiSticker('💧')">💧</button>
-                <button onclick="addEmojiSticker('🌿')">🌿</button>
-                <button onclick="addEmojiSticker('🌪️')">🌪️</button>
-                <button onclick="addEmojiSticker('🧊')">🧊</button>
-                <button onclick="addEmojiSticker('❤️')">❤️</button>
-                <button onclick="addEmojiSticker('✨')">✨</button>
-                <button onclick="addEmojiSticker('🍒')">🍒</button>
+                <label class="custom-sticker-label">+ 내 사진 추가<input type="file" id="customStickerInput" accept="image/*" style="display:none;"></label>
+                <script>
+                    const emojis = ['🍋','👻','💞','🐽','🐖','😇','💢','💘','🦴','🗨️','💋','👆','🪻','🍰','☁️','🌙','☀️','⚡','❄️','🍊','🍑','🌻','🧀','🍫','🎀','🕶️','🎵','🧸','🍓','👑','🪽','🐈‍⬛','🐈','🦊','🐶','😊','🐬','🐾','🐤','🐸','🫧','🍬','🍭','🐱','🦋','🥭','🍎','🐰','🌸','🌹','🌼','🌟','⭐','🌈','🔥','💧','🌿','🌪️','🧊','❤️','✨','🍒'];
+                    emojis.forEach(e => document.write(`<button onclick="addEmojiSticker('${e}')">${e}</button>`));
+                </script>
             </div>
         </div>
     </div>
@@ -669,31 +346,33 @@
 </div>
 
 <div class="canvas-container">
-    <div class="print-area" id="idCardSet">
-        <div class="id-card card-face" id="cardFront">
-            <div class="logo selectable-text">ARCH</div>
-            <div class="photo-wrapper">
-                <img id="photoPreviewFront" src="" alt="">
-            </div>
-            <div class="info-text">
-                <div class="name selectable-text" contenteditable="true">NOBEL</div>
-                <div class="rank selectable-text" contenteditable="true"> S-불속성 센티넬 / 가이드</div>
-            </div>
-            <div class="bottom-bar selectable-text" contenteditable="true">HARMONY DIV.</div>
-        </div>
-
-        <div class="id-card" id="cardBack">
-            <div class="back-layout type-1">
-                <div class="side-bar">
-                    <div class="side-text selectable-text" contenteditable="true">■ Kim cherry mango</div>
+    <div id="mobileScaleWrapper">
+        <div class="print-area" id="idCardSet">
+            <div class="id-card card-face" id="cardFront">
+                <div class="logo selectable-text">ARCH</div>
+                <div class="photo-wrapper">
+                    <img id="photoPreviewFront" src="" alt="">
                 </div>
-                <div class="content">
-                    <div class="notice selectable-text" contenteditable="true">| 주의사항</div>
-                    <p class="selectable-text" contenteditable="true">
-                        사원증은 항상 소지해야 합니다.<br>
-                        타인에게 양도·대여할 수 없습니다.<br>
-                        분실 시 재발급을 받아야 합니다.<br><br>
-                    </p>
+                <div class="info-text">
+                    <div class="name selectable-text" contenteditable="true">NOBEL</div>
+                    <div class="rank selectable-text" contenteditable="true"> S-불속성 센티넬 / 가이드</div>
+                </div>
+                <div class="bottom-bar selectable-text" contenteditable="true">HARMONY DIV.</div>
+            </div>
+
+            <div class="id-card" id="cardBack">
+                <div class="back-layout type-1">
+                    <div class="side-bar">
+                        <div class="side-text selectable-text" contenteditable="true">■ Kim cherry mango</div>
+                    </div>
+                    <div class="content">
+                        <div class="notice selectable-text" contenteditable="true">| 주의사항</div>
+                        <p class="selectable-text" contenteditable="true">
+                            사원증은 항상 소지해야 합니다.<br>
+                            타인에게 양도·대여할 수 없습니다.<br>
+                            분실 시 재발급을 받아야 합니다.<br><br>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -720,23 +399,16 @@
 
     backTypeSelect.addEventListener('change', function(e) {
         const type = e.target.value;
-        
         clearSelections();
 
         if (type === 'type-1') {
             cardBack.className = 'id-card';
             cardBack.innerHTML = `
                 <div class="back-layout type-1">
-                    <div class="side-bar">
-                        <div class="side-text selectable-text" contenteditable="true">■ Kim cherry mango</div>
-                    </div>
+                    <div class="side-bar"><div class="side-text selectable-text" contenteditable="true">■ Kim cherry mango</div></div>
                     <div class="content">
                         <div class="notice selectable-text" contenteditable="true">| 주의사항</div>
-                        <p class="selectable-text" contenteditable="true">
-                            사원증은 항상 소지해야 합니다.<br>
-                            타인에게 양도·대여할 수 없습니다.<br>
-                            분실 시 재발급을 받아야 합니다.<br><br>
-                        </p>
+                        <p class="selectable-text" contenteditable="true">사원증은 항상 소지해야 합니다.<br>타인에게 양도·대여할 수 없습니다.<br>분실 시 재발급을 받아야 합니다.<br><br></p>
                     </div>
                 </div>`;
             backPhotoUploadContainer.style.display = 'none';
@@ -744,16 +416,10 @@
             cardBack.className = 'id-card';
             cardBack.innerHTML = `
                 <div class="back-layout-center">
-                    <div class="top-bar">
-                        <div class="top-text selectable-text" contenteditable="true">■ Kim cherry mango</div>
-                    </div>
+                    <div class="top-bar"><div class="top-text selectable-text" contenteditable="true">■ Kim cherry mango</div></div>
                     <div class="bottom-content">
                         <div class="notice selectable-text" contenteditable="true">| 주의사항</div>
-                        <p class="selectable-text" contenteditable="true">
-                            사원증은 항상 소지해야 합니다.<br>
-                            타인에게 양도·대여할 수 없습니다.<br>
-                            분실 시 재발급을 받아야 합니다.<br><br>
-                        </p>
+                        <p class="selectable-text" contenteditable="true">사원증은 항상 소지해야 합니다.<br>타인에게 양도·대여할 수 없습니다.<br>분실 시 재발급을 받아야 합니다.<br><br></p>
                     </div>
                 </div>`;
             backPhotoUploadContainer.style.display = 'none';
@@ -761,9 +427,7 @@
             cardBack.className = 'id-card card-face';
             cardBack.innerHTML = `
                 <div class="logo selectable-text">ARCH</div>
-                <div class="photo-wrapper">
-                    <img id="photoPreviewBack" src="" alt="">
-                </div>
+                <div class="photo-wrapper"><img id="photoPreviewBack" src="" alt=""></div>
                 <div class="info-text">
                     <div class="name selectable-text" contenteditable="true">NOBEL</div>
                     <div class="rank selectable-text" contenteditable="true"> S-불속성 센티넬 / 가이드</div>
@@ -772,44 +436,29 @@
             backPhotoUploadContainer.style.display = 'block';
             
             const backInput = document.getElementById('photoInputBack');
-            if(backInput.files && backInput.files[0]) {
-                loadImage(backInput.files[0], 'photoPreviewBack');
-            }
+            if(backInput.files && backInput.files[0]) loadImage(backInput.files[0], 'photoPreviewBack');
         }
     });
 
-    // --- 개별 글씨 크기 및 굵기 조절 스크립트 ---
+    // --- 개별 글씨 크기 및 굵기 조절 ---
     const textSizeInput = document.getElementById('textSizeInput');
     const textSizeDisplay = document.getElementById('textSizeDisplay');
     const textWeightInput = document.getElementById('textWeightInput');
     const textWeightDisplay = document.getElementById('textWeightDisplay');
 
     textSizeInput.addEventListener('input', function(e) {
-        if (selectedText) {
-            selectedText.style.fontSize = e.target.value + 'px';
-            textSizeDisplay.innerText = e.target.value;
-        }
+        if (selectedText) { selectedText.style.fontSize = e.target.value + 'px'; textSizeDisplay.innerText = e.target.value; }
     });
-
     textWeightInput.addEventListener('input', function(e) {
-        if (selectedText) {
-            selectedText.style.fontWeight = e.target.value;
-            textWeightDisplay.innerText = e.target.value;
-        }
+        if (selectedText) { selectedText.style.fontWeight = e.target.value; textWeightDisplay.innerText = e.target.value; }
     });
 
     function clearSelections() {
-        if (selectedSticker) {
-            selectedSticker.classList.remove('selected-sticker');
-            selectedSticker = null;
-        }
+        if (selectedSticker) { selectedSticker.classList.remove('selected-sticker'); selectedSticker = null; }
         if (selectedText) {
-            selectedText.classList.remove('selected-text');
-            selectedText = null;
-            textSizeInput.disabled = true;
-            textWeightInput.disabled = true;
-            textSizeDisplay.innerText = '-';
-            textWeightDisplay.innerText = '-';
+            selectedText.classList.remove('selected-text'); selectedText = null;
+            textSizeInput.disabled = true; textWeightInput.disabled = true;
+            textSizeDisplay.innerText = '-'; textWeightDisplay.innerText = '-';
         }
     }
 
@@ -840,10 +489,8 @@
         if (selectedText && selectedText !== clickedText) {
             selectedText.classList.remove('selected-text');
             selectedText = null;
-            textSizeInput.disabled = true;
-            textWeightInput.disabled = true;
-            textSizeDisplay.innerText = '-';
-            textWeightDisplay.innerText = '-';
+            textSizeInput.disabled = true; textWeightInput.disabled = true;
+            textSizeDisplay.innerText = '-'; textWeightDisplay.innerText = '-';
         }
 
         if (clickedSticker) {
@@ -864,18 +511,14 @@
             
             const currentStyle = window.getComputedStyle(selectedText);
             const sizeValue = parseInt(currentStyle.fontSize);
-            textSizeInput.value = sizeValue;
-            textSizeDisplay.innerText = sizeValue;
-            textSizeInput.disabled = false;
+            textSizeInput.value = sizeValue; textSizeDisplay.innerText = sizeValue; textSizeInput.disabled = false;
 
             let weightValue = currentStyle.fontWeight;
             if (weightValue === 'bold') weightValue = 700;
             else if (weightValue === 'normal') weightValue = 400;
             else weightValue = parseInt(weightValue) || 400;
 
-            textWeightInput.value = weightValue;
-            textWeightDisplay.innerText = weightValue;
-            textWeightInput.disabled = false;
+            textWeightInput.value = weightValue; textWeightDisplay.innerText = weightValue; textWeightInput.disabled = false;
         }
     });
 
@@ -895,13 +538,8 @@
                 img.onload = function() {
                     const wrapperRatio = 164 / 204;
                     const imgRatio = img.naturalWidth / img.naturalHeight;
-                    if (imgRatio > wrapperRatio) {
-                        img.style.width = 'auto';
-                        img.style.height = '100%';
-                    } else {
-                        img.style.width = '100%';
-                        img.style.height = 'auto';
-                    }
+                    if (imgRatio > wrapperRatio) { img.style.width = 'auto'; img.style.height = '100%'; } 
+                    else { img.style.width = '100%'; img.style.height = 'auto'; }
                 };
                 img.src = event.target.result;
             }
@@ -909,38 +547,22 @@
         reader.readAsDataURL(file);
     }
 
-    document.getElementById('photoInputFront').addEventListener('change', function(e) {
-        if(e.target.files[0]) loadImage(e.target.files[0], 'photoPreviewFront');
-    });
-
-    document.getElementById('photoInputBack').addEventListener('change', function(e) {
-        if(e.target.files[0]) loadImage(e.target.files[0], 'photoPreviewBack');
-    });
+    document.getElementById('photoInputFront').addEventListener('change', function(e) { if(e.target.files[0]) loadImage(e.target.files[0], 'photoPreviewFront'); });
+    document.getElementById('photoInputBack').addEventListener('change', function(e) { if(e.target.files[0]) loadImage(e.target.files[0], 'photoPreviewBack'); });
 
     const colorInputs = [
-        { id: 'bgColorFront', variable: '--bg-color-front' },
-        { id: 'borderColorFront', variable: '--border-color-front' },
-        { id: 'themeColorFront', variable: '--theme-color-front' }, 
-        { id: 'logoColorFront', variable: '--logo-color-front' },
-        { id: 'nameColorFront', variable: '--name-color-front' },
-        { id: 'rankColorFront', variable: '--rank-color-front' },
+        { id: 'bgColorFront', variable: '--bg-color-front' }, { id: 'borderColorFront', variable: '--border-color-front' },
+        { id: 'themeColorFront', variable: '--theme-color-front' }, { id: 'logoColorFront', variable: '--logo-color-front' },
+        { id: 'nameColorFront', variable: '--name-color-front' }, { id: 'rankColorFront', variable: '--rank-color-front' },
         { id: 'bottomTextColorFront', variable: '--bottom-text-color-front' },
-        { id: 'bgColorBack', variable: '--bg-color-back' },
-        { id: 'borderColorBack', variable: '--border-color-back' },
-        { id: 'themeColorBack', variable: '--theme-color-back' },   
-        { id: 'logoColorBack', variable: '--logo-color-back' },
-        { id: 'nameColorBack', variable: '--name-color-back' },
-        { id: 'rankColorBack', variable: '--rank-color-back' },
+        { id: 'bgColorBack', variable: '--bg-color-back' }, { id: 'borderColorBack', variable: '--border-color-back' },
+        { id: 'themeColorBack', variable: '--theme-color-back' }, { id: 'logoColorBack', variable: '--logo-color-back' },
+        { id: 'nameColorBack', variable: '--name-color-back' }, { id: 'rankColorBack', variable: '--rank-color-back' },
         { id: 'bottomTextColorBack', variable: '--bottom-text-color-back' }
     ];
-    
     colorInputs.forEach(item => {
         const inputElement = document.getElementById(item.id);
-        if (inputElement) {
-            inputElement.addEventListener('input', (e) => {
-                root.setProperty(item.variable, e.target.value);
-            });
-        }
+        if (inputElement) inputElement.addEventListener('input', (e) => { root.setProperty(item.variable, e.target.value); });
     });
 
     function addEmojiSticker(emoji) {
@@ -948,15 +570,9 @@
         sticker.className = 'drag-sticker';
         sticker.innerText = emoji;
         sticker.title = "더블클릭하여 삭제";
-        sticker.style.left = '100px';
-        sticker.style.top = '100px';
-        sticker.dataset.scale = "100";
-        sticker.dataset.scaleX = "100";
-        sticker.dataset.scaleY = "100";
-        sticker.dataset.rotate = "0";
-        sticker.dataset.hue = "0";
-        sticker.dataset.opacity = "100";
-        sticker.dataset.brightness = "100";
+        sticker.style.left = '100px'; sticker.style.top = '100px';
+        sticker.dataset.scale = "100"; sticker.dataset.scaleX = "100"; sticker.dataset.scaleY = "100";
+        sticker.dataset.rotate = "0"; sticker.dataset.hue = "0"; sticker.dataset.opacity = "100"; sticker.dataset.brightness = "100";
         updateStickerStyle(sticker);
         sticker.ondblclick = function() { sticker.remove(); };
         printArea.appendChild(sticker);
@@ -973,15 +589,9 @@
                 const img = document.createElement('img');
                 img.src = event.target.result;
                 sticker.appendChild(img);
-                sticker.style.left = '100px';
-                sticker.style.top = '100px';
-                sticker.dataset.scale = "100";
-                sticker.dataset.scaleX = "100";
-                sticker.dataset.scaleY = "100";
-                sticker.dataset.rotate = "0";
-                sticker.dataset.hue = "0";
-                sticker.dataset.opacity = "100";
-                sticker.dataset.brightness = "100";
+                sticker.style.left = '100px'; sticker.style.top = '100px';
+                sticker.dataset.scale = "100"; sticker.dataset.scaleX = "100"; sticker.dataset.scaleY = "100";
+                sticker.dataset.rotate = "0"; sticker.dataset.hue = "0"; sticker.dataset.opacity = "100"; sticker.dataset.brightness = "100";
                 updateStickerStyle(sticker);
                 sticker.ondblclick = function() { sticker.remove(); };
                 printArea.appendChild(sticker);
@@ -992,6 +602,7 @@
         }
     });
 
+    // ★ 드래그 오류 완벽 해결 (PC/모바일 좌표 계산 분리) ★
     function makeDraggable(elmnt) {
         let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
         elmnt.onmousedown = dragMouseDown;
@@ -1001,17 +612,12 @@
             e = e || window.event;
             
             if(selectedText) {
-                selectedText.classList.remove('selected-text');
-                selectedText = null;
-                textSizeInput.disabled = true;
-                textWeightInput.disabled = true;
-                textSizeDisplay.innerText = '-';
-                textWeightDisplay.innerText = '-';
+                selectedText.classList.remove('selected-text'); selectedText = null;
+                textSizeInput.disabled = true; textWeightInput.disabled = true;
+                textSizeDisplay.innerText = '-'; textWeightDisplay.innerText = '-';
             }
 
-            if (selectedSticker && selectedSticker !== elmnt) {
-                selectedSticker.classList.remove('selected-sticker');
-            }
+            if (selectedSticker && selectedSticker !== elmnt) { selectedSticker.classList.remove('selected-sticker'); }
             selectedSticker = elmnt;
             selectedSticker.classList.add('selected-sticker');
 
@@ -1039,13 +645,23 @@
 
         function elementDrag(e) {
             e = e || window.event;
-            if(e.type !== 'touchmove') e.preventDefault();
+            let clientX, clientY;
             
-            let clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-            let clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+            if (e.type === 'touchmove') {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                e.preventDefault();
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
 
-            pos1 = pos3 - clientX;
-            pos2 = pos4 - clientY;
+            // 화면이 모바일(900px 이하)이라서 0.55배 축소된 상태라면, 마우스 이동 거리도 그 비율에 맞게 계산해야 정상적으로 따라갑니다.
+            const isMobile = window.innerWidth <= 900;
+            const scaleFactor = isMobile ? 0.55 : 1; 
+
+            pos1 = (pos3 - clientX) / scaleFactor;
+            pos2 = (pos4 - clientY) / scaleFactor;
             pos3 = clientX;
             pos4 = clientY;
             
@@ -1061,42 +677,54 @@
         }
     }
 
-    // ★ 모바일 저장(이미지 분실, 크기 및 폰트 깨짐 완벽 방지) ★
+    // ★ 모바일 저장 오류/작은 크기 저장 완벽 해결 ★
     function saveCard() {
         clearSelections(); 
 
         const area = document.getElementById('idCardSet');
+        const wrapper = document.getElementById('mobileScaleWrapper');
         const isMobile = window.innerWidth <= 900;
+        const currentFont = document.getElementById('fontSelect').value;
         
-        // 캡처 영역 원본 크기 추출 (축소된 상태 무시)
-        const captureWidth = area.offsetWidth;
-        const captureHeight = area.offsetHeight;
-
+        // PC는 그대로 유지, 모바일은 초고화질(4배수) 적용
         const options = { 
-            pixelRatio: isMobile ? 4 : 3, // 모바일은 초고해상도 보장
-            width: captureWidth,
-            height: captureHeight,
-            cacheBust: true, // 이미지 날아감 버그 방지
-            style: {
-                // 이 설정이 "캡처되는 도화지" 안에서만 스케일을 100%로 강제해서 크기를 살림
-                transform: 'scale(1)', 
-                transformOrigin: 'top left'
+            pixelRatio: isMobile ? 4 : 3, 
+            useCORS: true, 
+            cacheBust: true,
+            style: isMobile ? {
+                transform: 'scale(1)',
+                transformOrigin: 'top left',
+                fontFamily: currentFont // 폰트 강제 주입
+            } : {
+                fontFamily: currentFont 
             }
         };
 
-        // 지연 시간을 주어 폰트와 이미지가 캡처본에 확실히 적용될 시간을 벌어줍니다.
+        if (isMobile) { wrapper.style.transform = 'scale(1)'; }
+
         setTimeout(() => {
             htmlToImage.toPng(area, options)
-                .then(function (dataUrl) {
-                    const link = document.createElement('a');
-                    link.download = 'ARCH_사원증.png';
-                    link.href = dataUrl;
-                    link.click();
+                .then(function () {
+                    setTimeout(() => {
+                        htmlToImage.toPng(area, options)
+                            .then(function (dataUrl) {
+                                if (isMobile) wrapper.style.transform = 'scale(0.55)';
+                                const link = document.createElement('a');
+                                link.download = 'ARCH_사원증.png';
+                                link.href = dataUrl;
+                                link.click();
+                            })
+                            .catch(function (error) {
+                                if (isMobile) wrapper.style.transform = 'scale(0.55)';
+                                alert("저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+                            });
+                    }, 200); 
                 })
                 .catch(function (error) {
-                    alert("저장 중 오류가 발생했습니다. 브라우저 저장소 접근 권한을 확인해주세요.");
+                    if (isMobile) wrapper.style.transform = 'scale(0.55)';
+                    alert("이미지 처리 중 오류가 발생했습니다.");
                 });
-        }, 300);
+        }, 100);
     }
 </script>
 
