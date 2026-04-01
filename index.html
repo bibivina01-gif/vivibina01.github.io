@@ -9,6 +9,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
 <style>
     :root {
+        /* 앞면 전용 색상 변수 */
         --bg-color-front: #ffffff;
         --border-color-front: #cfd4db;
         --theme-color-front: #a0a5aa; 
@@ -17,6 +18,7 @@
         --rank-color-front: #666666;
         --bottom-text-color-front: #ffffff;
 
+        /* 뒷면 전용 색상 변수 */
         --bg-color-back: #ffffff;
         --border-color-back: #cfd4db;
         --theme-color-back: #a0a5aa; 
@@ -46,46 +48,26 @@
         --bottom-text-color: var(--bottom-text-color-back);
     }
 
-    /* ★ PC 기본 레이아웃 (좌측 바, 우측 사원증) ★ */
+    /* ★ PC 기본 레이아웃 ★ */
     body {
-        display: flex;
-        flex-direction: row; 
-        min-height: 100vh;
-        background-color: #e9ecef;
-        font-family: 'Noto Sans KR', sans-serif; 
-        margin: 0;
-        padding: 0; 
+        display: flex; flex-direction: row; min-height: 100vh;
+        background-color: #e9ecef; font-family: 'Noto Sans KR', sans-serif; 
+        margin: 0; padding: 0; 
     }
 
     .setup-panel {
-        background: white;
-        padding: 25px 30px; 
-        box-shadow: 2px 0 15px rgba(0,0,0,0.1); 
-        width: 520px; 
-        height: 100vh; 
-        overflow-y: auto; 
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        z-index: 10;
+        background: white; padding: 25px 30px; box-shadow: 2px 0 15px rgba(0,0,0,0.1); 
+        width: 520px; height: 100vh; overflow-y: auto; box-sizing: border-box;
+        display: flex; flex-direction: column; gap: 15px; z-index: 10;
     }
 
     .canvas-container {
-        flex: 1; 
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: auto;
-        padding: 20px;
+        flex: 1; display: flex; justify-content: center; align-items: center;
+        overflow: auto; padding: 20px;
     }
 
     #mobileScaleWrapper {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        transition: transform 0s;
+        display: flex; justify-content: center; align-items: center; width: 100%;
     }
 
     .control-group { display: flex; flex-direction: column; gap: 8px; }
@@ -132,6 +114,7 @@
         font-size: 16px; font-weight: bold; transition: 0.2s; margin-top: 15px; margin-bottom: 20px;
     }
     .save-btn:hover { background-color: #1a252f; }
+    .save-btn:disabled { background-color: #888; cursor: not-allowed; }
 
     /* 사원증 출력 영역 */
     .print-area {
@@ -144,7 +127,7 @@
         display: flex; flex-direction: column; align-items: center; border: 1.5px solid var(--border-color); flex-shrink: 0;
     }
 
-    /* 앞면 공통 디자인 요소 */
+    /* 앞면 디자인 */
     .card-face .logo { margin-top: 25px; font-size: 34px; font-weight: 900; color: var(--logo-color); letter-spacing: 1px; }
     .card-face .photo-wrapper {
         margin-top: 15px; width: 170px; height: 210px; border: 2px solid var(--theme-color-front);
@@ -160,7 +143,7 @@
         font-size: 12px; font-weight: bold; letter-spacing: 1px;
     }
 
-    /* 뒷면 전용 레이아웃 (타입 1 용 - 왼쪽 바) */
+    /* 뒷면 전용 레이아웃 */
     .back-layout { display: flex; flex-direction: row; width: 100%; height: 100%; }
     .back-layout .side-bar { background-color: var(--theme-color-back); display: flex; justify-content: center; align-items: center; width: 60px; }
     .back-layout .side-text { transform: rotate(-90deg); white-space: nowrap; color: var(--bottom-text-color); font-size: 18px; font-weight: 600; }
@@ -168,19 +151,13 @@
     .back-layout .content .notice { color: var(--theme-color-back); font-size: 14px; font-weight: bold; margin-bottom: 10px; }
     .back-layout .content p { font-size: 12px; color: var(--name-color); line-height: 1.8; margin: 0; opacity: 0.8; }
 
-    /* 뒷면 전용 레이아웃 (타입 3 용 - 상단 중앙 바) */
     .back-layout-center { display: flex; flex-direction: column; width: 100%; height: 100%; align-items: center; }
-    .back-layout-center .top-bar {
-        width: 60px; height: 240px; background-color: var(--theme-color-back); display: flex; justify-content: center; align-items: center;
-    }
+    .back-layout-center .top-bar { width: 60px; height: 240px; background-color: var(--theme-color-back); display: flex; justify-content: center; align-items: center; }
     .back-layout-center .top-text { transform: rotate(-90deg); white-space: nowrap; color: var(--bottom-text-color); font-size: 18px; font-weight: 600; }
-    .back-layout-center .bottom-content {
-        width: 100%; flex: 1; padding: 30px 40px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start;
-    }
+    .back-layout-center .bottom-content { width: 100%; flex: 1; padding: 30px 40px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start; }
     .back-layout-center .bottom-content .notice { color: var(--theme-color-back); font-size: 14px; font-weight: bold; margin-bottom: 10px; }
     .back-layout-center .bottom-content p { font-size: 12px; color: var(--name-color); line-height: 1.8; margin: 0; opacity: 0.8; }
 
-    /* 스티커 스타일 (touch-action 추가로 스크롤 방지) */
     .drag-sticker {
         position: absolute; cursor: grab; user-select: none; touch-action: none;
         z-index: 999; font-size: 35px; transition: filter 0.1s, transform 0.1s; 
@@ -189,7 +166,7 @@
     .drag-sticker img { width: 80px; height: auto; pointer-events: none; }
     .selected-sticker { border: 2px dashed #ff4757 !important; box-sizing: content-box; border-radius: 8px; }
 
-    /* ★ 모바일 환경 레이아웃 전용 조작 (PC에는 절대 영향 없음) ★ */
+    /* ★ 모바일 환경 전용 UI ★ */
     @media screen and (max-width: 900px) {
         body { flex-direction: column !important; }
         .setup-panel { 
@@ -203,11 +180,11 @@
             order: 2 !important; 
         }
         #mobileScaleWrapper {
-            transform: scale(0.55); /* 폰 화면에 쏙 들어가게 축소 */
+            transform: scale(0.55); /* 나란히 보이기 위한 축소 */
             transform-origin: top center;
         }
         .print-area { 
-            flex-direction: row !important; /* 모바일에서도 무조건 나란히(가로) 배치! */
+            flex-direction: row !important; /* 가로 나란히 고정 */
             gap: 20px !important; 
         }
     }
@@ -216,13 +193,9 @@
 <body>
 
 <div style="position: absolute; top: -9999px; left: -9999px; visibility: hidden;">
-    <span style="font-family: 'Noto Sans KR';">preload</span>
-    <span style="font-family: 'Noto Serif KR';">preload</span>
-    <span style="font-family: 'Playfair Display';">preload</span>
-    <span style="font-family: 'Cinzel';">preload</span>
-    <span style="font-family: 'Galmuri9';">preload</span>
-    <span style="font-family: 'Jua';">preload</span>
-    <span style="font-family: 'Gaegu';">preload</span>
+    <span style="font-family: 'Noto Sans KR';">preload</span><span style="font-family: 'Noto Serif KR';">preload</span>
+    <span style="font-family: 'Playfair Display';">preload</span><span style="font-family: 'Cinzel';">preload</span>
+    <span style="font-family: 'Galmuri9';">preload</span><span style="font-family: 'Jua';">preload</span><span style="font-family: 'Gaegu';">preload</span>
 </div>
 
 <div class="setup-panel">
@@ -239,19 +212,9 @@
         </select>
         
         <div class="text-edit-panel">
-            <label style="font-size:11px; color:#555;">
-                👆 오른쪽 사원증에서 변경할 <b>글씨를 클릭</b>하세요!
-            </label>
-            <div class="slider-row">
-                <span class="label">크기</span>
-                <input type="range" id="textSizeInput" min="8" max="60" value="14" disabled>
-                <span class="value" id="textSizeDisplay">-</span>
-            </div>
-            <div class="slider-row">
-                <span class="label">굵기</span>
-                <input type="range" id="textWeightInput" min="100" max="900" step="100" value="400" disabled>
-                <span class="value" id="textWeightDisplay">-</span>
-            </div>
+            <label style="font-size:11px; color:#555;">👆 오른쪽 사원증에서 변경할 <b>글씨를 클릭</b>하세요!</label>
+            <div class="slider-row"><span class="label">크기</span><input type="range" id="textSizeInput" min="8" max="60" value="14" disabled><span class="value" id="textSizeDisplay">-</span></div>
+            <div class="slider-row"><span class="label">굵기</span><input type="range" id="textWeightInput" min="100" max="900" step="100" value="400" disabled><span class="value" id="textWeightDisplay">-</span></div>
         </div>
     </div>
 
@@ -271,10 +234,7 @@
     <div class="control-group">
         <label class="title">📷 사진 올리기</label>
         <div style="display:flex; flex-direction:column; gap:10px; background:#f8f9fa; padding:12px; border-radius:8px; border:1px solid #eee;">
-            <div>
-                <label style="font-size:12px; font-weight:bold; display:block; margin-bottom:4px;">▶ 앞면 사진</label>
-                <input type="file" id="photoInputFront" accept="image/*">
-            </div>
+            <div><label style="font-size:12px; font-weight:bold; display:block; margin-bottom:4px;">▶ 앞면 사진</label><input type="file" id="photoInputFront" accept="image/*"></div>
             <div id="backPhotoUploadContainer" style="display:none; padding-top:10px; border-top:1px dashed #ccc;">
                 <label style="font-size:12px; font-weight:bold; color:#0984e3; display:block; margin-bottom:4px;">▶ 뒷면 사진 (타입 2 전용)</label>
                 <input type="file" id="photoInputBack" accept="image/*">
@@ -303,9 +263,9 @@
             <div class="color-item"><label>바탕</label><input type="color" id="bgColorBack" value="#ffffff"></div>
             <div class="color-item"><label>테두리</label><input type="color" id="borderColorBack" value="#cfd4db"></div>
             <div class="color-item"><label>포인트(바)</label><input type="color" id="themeColorBack" value="#a0a5aa"></div>
-            <div class="color-item"><label>로고</label><input type="color" id="logoColorBack" value="#4a4d52"></div>
+            <div class="color-item"><label>로고(타입2)</label><input type="color" id="logoColorBack" value="#4a4d52"></div>
             <div class="color-item"><label>이름/내용</label><input type="color" id="nameColorBack" value="#111111"></div>
-            <div class="color-item"><label>등급</label><input type="color" id="rankColorBack" value="#666666"></div>
+            <div class="color-item"><label>등급(타입2)</label><input type="color" id="rankColorBack" value="#666666"></div>
             <div class="color-item"><label>바 글씨</label><input type="color" id="bottomTextColorBack" value="#ffffff"></div>
         </div>
     </div>
@@ -342,7 +302,7 @@
         </div>
     </div>
 
-    <button class="save-btn" onclick="saveCard()">사원증 이미지로 저장하기</button>
+    <button class="save-btn" id="saveActionBtn" onclick="saveCard()">사원증 이미지로 저장하기</button>
 </div>
 
 <div class="canvas-container">
@@ -350,9 +310,7 @@
         <div class="print-area" id="idCardSet">
             <div class="id-card card-face" id="cardFront">
                 <div class="logo selectable-text">ARCH</div>
-                <div class="photo-wrapper">
-                    <img id="photoPreviewFront" src="" alt="">
-                </div>
+                <div class="photo-wrapper"><img id="photoPreviewFront" src="" alt=""></div>
                 <div class="info-text">
                     <div class="name selectable-text" contenteditable="true">NOBEL</div>
                     <div class="rank selectable-text" contenteditable="true"> S-불속성 센티넬 / 가이드</div>
@@ -362,16 +320,10 @@
 
             <div class="id-card" id="cardBack">
                 <div class="back-layout type-1">
-                    <div class="side-bar">
-                        <div class="side-text selectable-text" contenteditable="true">■ Kim cherry mango</div>
-                    </div>
+                    <div class="side-bar"><div class="side-text selectable-text" contenteditable="true">■ Kim cherry mango</div></div>
                     <div class="content">
                         <div class="notice selectable-text" contenteditable="true">| 주의사항</div>
-                        <p class="selectable-text" contenteditable="true">
-                            사원증은 항상 소지해야 합니다.<br>
-                            타인에게 양도·대여할 수 없습니다.<br>
-                            분실 시 재발급을 받아야 합니다.<br><br>
-                        </p>
+                        <p class="selectable-text" contenteditable="true">사원증은 항상 소지해야 합니다.<br>타인에게 양도·대여할 수 없습니다.<br>분실 시 재발급을 받아야 합니다.<br><br></p>
                     </div>
                 </div>
             </div>
@@ -385,14 +337,12 @@
     let selectedSticker = null; 
     let selectedText = null; 
 
-    // --- 글꼴 변경 스크립트 ---
     const fontSelect = document.getElementById('fontSelect');
     fontSelect.addEventListener('change', function(e) {
         printArea.style.fontFamily = e.target.value;
         this.style.fontFamily = e.target.value;
     });
 
-    // --- 뒷면 디자인 타입 변경 스크립트 ---
     const backTypeSelect = document.getElementById('backTypeSelect');
     const cardBack = document.getElementById('cardBack');
     const backPhotoUploadContainer = document.getElementById('backPhotoUploadContainer');
@@ -400,58 +350,30 @@
     backTypeSelect.addEventListener('change', function(e) {
         const type = e.target.value;
         clearSelections();
-
         if (type === 'type-1') {
             cardBack.className = 'id-card';
-            cardBack.innerHTML = `
-                <div class="back-layout type-1">
-                    <div class="side-bar"><div class="side-text selectable-text" contenteditable="true">■ Kim cherry mango</div></div>
-                    <div class="content">
-                        <div class="notice selectable-text" contenteditable="true">| 주의사항</div>
-                        <p class="selectable-text" contenteditable="true">사원증은 항상 소지해야 합니다.<br>타인에게 양도·대여할 수 없습니다.<br>분실 시 재발급을 받아야 합니다.<br><br></p>
-                    </div>
-                </div>`;
+            cardBack.innerHTML = `<div class="back-layout type-1"><div class="side-bar"><div class="side-text selectable-text" contenteditable="true">■ Kim cherry mango</div></div><div class="content"><div class="notice selectable-text" contenteditable="true">| 주의사항</div><p class="selectable-text" contenteditable="true">사원증은 항상 소지해야 합니다.<br>타인에게 양도·대여할 수 없습니다.<br>분실 시 재발급을 받아야 합니다.<br><br></p></div></div>`;
             backPhotoUploadContainer.style.display = 'none';
         } else if (type === 'type-3') {
             cardBack.className = 'id-card';
-            cardBack.innerHTML = `
-                <div class="back-layout-center">
-                    <div class="top-bar"><div class="top-text selectable-text" contenteditable="true">■ Kim cherry mango</div></div>
-                    <div class="bottom-content">
-                        <div class="notice selectable-text" contenteditable="true">| 주의사항</div>
-                        <p class="selectable-text" contenteditable="true">사원증은 항상 소지해야 합니다.<br>타인에게 양도·대여할 수 없습니다.<br>분실 시 재발급을 받아야 합니다.<br><br></p>
-                    </div>
-                </div>`;
+            cardBack.innerHTML = `<div class="back-layout-center"><div class="top-bar"><div class="top-text selectable-text" contenteditable="true">■ Kim cherry mango</div></div><div class="bottom-content"><div class="notice selectable-text" contenteditable="true">| 주의사항</div><p class="selectable-text" contenteditable="true">사원증은 항상 소지해야 합니다.<br>타인에게 양도·대여할 수 없습니다.<br>분실 시 재발급을 받아야 합니다.<br><br></p></div></div>`;
             backPhotoUploadContainer.style.display = 'none';
         } else if (type === 'type-2') {
             cardBack.className = 'id-card card-face';
-            cardBack.innerHTML = `
-                <div class="logo selectable-text">ARCH</div>
-                <div class="photo-wrapper"><img id="photoPreviewBack" src="" alt=""></div>
-                <div class="info-text">
-                    <div class="name selectable-text" contenteditable="true">NOBEL</div>
-                    <div class="rank selectable-text" contenteditable="true"> S-불속성 센티넬 / 가이드</div>
-                </div>
-                <div class="bottom-bar selectable-text" contenteditable="true" style="background-color: var(--theme-color-back);">HARMONY DIV.</div>`;
+            cardBack.innerHTML = `<div class="logo selectable-text">ARCH</div><div class="photo-wrapper"><img id="photoPreviewBack" src="" alt=""></div><div class="info-text"><div class="name selectable-text" contenteditable="true">NOBEL</div><div class="rank selectable-text" contenteditable="true"> S-불속성 센티넬 / 가이드</div></div><div class="bottom-bar selectable-text" contenteditable="true" style="background-color: var(--theme-color-back);">HARMONY DIV.</div>`;
             backPhotoUploadContainer.style.display = 'block';
-            
             const backInput = document.getElementById('photoInputBack');
             if(backInput.files && backInput.files[0]) loadImage(backInput.files[0], 'photoPreviewBack');
         }
     });
 
-    // --- 개별 글씨 크기 및 굵기 조절 ---
     const textSizeInput = document.getElementById('textSizeInput');
     const textSizeDisplay = document.getElementById('textSizeDisplay');
     const textWeightInput = document.getElementById('textWeightInput');
     const textWeightDisplay = document.getElementById('textWeightDisplay');
 
-    textSizeInput.addEventListener('input', function(e) {
-        if (selectedText) { selectedText.style.fontSize = e.target.value + 'px'; textSizeDisplay.innerText = e.target.value; }
-    });
-    textWeightInput.addEventListener('input', function(e) {
-        if (selectedText) { selectedText.style.fontWeight = e.target.value; textWeightDisplay.innerText = e.target.value; }
-    });
+    textSizeInput.addEventListener('input', function(e) { if (selectedText) { selectedText.style.fontSize = e.target.value + 'px'; textSizeDisplay.innerText = e.target.value; }});
+    textWeightInput.addEventListener('input', function(e) { if (selectedText) { selectedText.style.fontWeight = e.target.value; textWeightDisplay.innerText = e.target.value; }});
 
     function clearSelections() {
         if (selectedSticker) { selectedSticker.classList.remove('selected-sticker'); selectedSticker = null; }
@@ -481,43 +403,21 @@
         const clickedSticker = e.target.closest('.drag-sticker');
         const clickedText = e.target.closest('.selectable-text');
 
-        if (selectedSticker && selectedSticker !== clickedSticker) {
-            selectedSticker.classList.remove('selected-sticker');
-            selectedSticker = null;
-        }
-
-        if (selectedText && selectedText !== clickedText) {
-            selectedText.classList.remove('selected-text');
-            selectedText = null;
-            textSizeInput.disabled = true; textWeightInput.disabled = true;
-            textSizeDisplay.innerText = '-'; textWeightDisplay.innerText = '-';
-        }
+        if (selectedSticker && selectedSticker !== clickedSticker) { selectedSticker.classList.remove('selected-sticker'); selectedSticker = null; }
+        if (selectedText && selectedText !== clickedText) { selectedText.classList.remove('selected-text'); selectedText = null; textSizeInput.disabled = true; textWeightInput.disabled = true; textSizeDisplay.innerText = '-'; textWeightDisplay.innerText = '-'; }
 
         if (clickedSticker) {
-            selectedSticker = clickedSticker;
-            selectedSticker.classList.add('selected-sticker');
-
-            document.getElementById('stickerScale').value = selectedSticker.dataset.scale || 100;
-            document.getElementById('stickerScaleX').value = selectedSticker.dataset.scaleX || 100;
-            document.getElementById('stickerScaleY').value = selectedSticker.dataset.scaleY || 100;
-            document.getElementById('stickerRotate').value = selectedSticker.dataset.rotate || 0;
-            document.getElementById('stickerBrightness').value = selectedSticker.dataset.brightness || 100;
-            document.getElementById('stickerHue').value = selectedSticker.dataset.hue || 0;
-            document.getElementById('stickerOpacity').value = selectedSticker.dataset.opacity || 100;
-            
+            selectedSticker = clickedSticker; selectedSticker.classList.add('selected-sticker');
+            document.getElementById('stickerScale').value = selectedSticker.dataset.scale || 100; document.getElementById('stickerScaleX').value = selectedSticker.dataset.scaleX || 100;
+            document.getElementById('stickerScaleY').value = selectedSticker.dataset.scaleY || 100; document.getElementById('stickerRotate').value = selectedSticker.dataset.rotate || 0;
+            document.getElementById('stickerBrightness').value = selectedSticker.dataset.brightness || 100; document.getElementById('stickerHue').value = selectedSticker.dataset.hue || 0; document.getElementById('stickerOpacity').value = selectedSticker.dataset.opacity || 100;
         } else if (clickedText) {
-            selectedText = clickedText;
-            selectedText.classList.add('selected-text');
-            
+            selectedText = clickedText; selectedText.classList.add('selected-text');
             const currentStyle = window.getComputedStyle(selectedText);
             const sizeValue = parseInt(currentStyle.fontSize);
             textSizeInput.value = sizeValue; textSizeDisplay.innerText = sizeValue; textSizeInput.disabled = false;
-
             let weightValue = currentStyle.fontWeight;
-            if (weightValue === 'bold') weightValue = 700;
-            else if (weightValue === 'normal') weightValue = 400;
-            else weightValue = parseInt(weightValue) || 400;
-
+            if (weightValue === 'bold') weightValue = 700; else if (weightValue === 'normal') weightValue = 400; else weightValue = parseInt(weightValue) || 400;
             textWeightInput.value = weightValue; textWeightDisplay.innerText = weightValue; textWeightInput.disabled = false;
         }
     });
@@ -536,195 +436,154 @@
             const img = document.getElementById(targetId);
             if(img) {
                 img.onload = function() {
-                    const wrapperRatio = 164 / 204;
-                    const imgRatio = img.naturalWidth / img.naturalHeight;
-                    if (imgRatio > wrapperRatio) { img.style.width = 'auto'; img.style.height = '100%'; } 
-                    else { img.style.width = '100%'; img.style.height = 'auto'; }
+                    const wrapperRatio = 164 / 204; const imgRatio = img.naturalWidth / img.naturalHeight;
+                    if (imgRatio > wrapperRatio) { img.style.width = 'auto'; img.style.height = '100%'; } else { img.style.width = '100%'; img.style.height = 'auto'; }
                 };
                 img.src = event.target.result;
             }
         }
         reader.readAsDataURL(file);
     }
-
     document.getElementById('photoInputFront').addEventListener('change', function(e) { if(e.target.files[0]) loadImage(e.target.files[0], 'photoPreviewFront'); });
     document.getElementById('photoInputBack').addEventListener('change', function(e) { if(e.target.files[0]) loadImage(e.target.files[0], 'photoPreviewBack'); });
 
     const colorInputs = [
-        { id: 'bgColorFront', variable: '--bg-color-front' }, { id: 'borderColorFront', variable: '--border-color-front' },
-        { id: 'themeColorFront', variable: '--theme-color-front' }, { id: 'logoColorFront', variable: '--logo-color-front' },
-        { id: 'nameColorFront', variable: '--name-color-front' }, { id: 'rankColorFront', variable: '--rank-color-front' },
-        { id: 'bottomTextColorFront', variable: '--bottom-text-color-front' },
-        { id: 'bgColorBack', variable: '--bg-color-back' }, { id: 'borderColorBack', variable: '--border-color-back' },
-        { id: 'themeColorBack', variable: '--theme-color-back' }, { id: 'logoColorBack', variable: '--logo-color-back' },
-        { id: 'nameColorBack', variable: '--name-color-back' }, { id: 'rankColorBack', variable: '--rank-color-back' },
-        { id: 'bottomTextColorBack', variable: '--bottom-text-color-back' }
+        { id: 'bgColorFront', variable: '--bg-color-front' }, { id: 'borderColorFront', variable: '--border-color-front' }, { id: 'themeColorFront', variable: '--theme-color-front' }, { id: 'logoColorFront', variable: '--logo-color-front' }, { id: 'nameColorFront', variable: '--name-color-front' }, { id: 'rankColorFront', variable: '--rank-color-front' }, { id: 'bottomTextColorFront', variable: '--bottom-text-color-front' },
+        { id: 'bgColorBack', variable: '--bg-color-back' }, { id: 'borderColorBack', variable: '--border-color-back' }, { id: 'themeColorBack', variable: '--theme-color-back' }, { id: 'logoColorBack', variable: '--logo-color-back' }, { id: 'nameColorBack', variable: '--name-color-back' }, { id: 'rankColorBack', variable: '--rank-color-back' }, { id: 'bottomTextColorBack', variable: '--bottom-text-color-back' }
     ];
-    colorInputs.forEach(item => {
-        const inputElement = document.getElementById(item.id);
-        if (inputElement) inputElement.addEventListener('input', (e) => { root.setProperty(item.variable, e.target.value); });
-    });
+    colorInputs.forEach(item => { const el = document.getElementById(item.id); if (el) el.addEventListener('input', (e) => { root.setProperty(item.variable, e.target.value); }); });
 
     function addEmojiSticker(emoji) {
         const sticker = document.createElement('div');
-        sticker.className = 'drag-sticker';
-        sticker.innerText = emoji;
-        sticker.title = "더블클릭하여 삭제";
+        sticker.className = 'drag-sticker'; sticker.innerText = emoji; sticker.title = "더블클릭하여 삭제";
         sticker.style.left = '100px'; sticker.style.top = '100px';
-        sticker.dataset.scale = "100"; sticker.dataset.scaleX = "100"; sticker.dataset.scaleY = "100";
-        sticker.dataset.rotate = "0"; sticker.dataset.hue = "0"; sticker.dataset.opacity = "100"; sticker.dataset.brightness = "100";
-        updateStickerStyle(sticker);
-        sticker.ondblclick = function() { sticker.remove(); };
-        printArea.appendChild(sticker);
-        makeDraggable(sticker);
+        sticker.dataset.scale = "100"; sticker.dataset.scaleX = "100"; sticker.dataset.scaleY = "100"; sticker.dataset.rotate = "0"; sticker.dataset.hue = "0"; sticker.dataset.opacity = "100"; sticker.dataset.brightness = "100";
+        updateStickerStyle(sticker); sticker.ondblclick = function() { sticker.remove(); };
+        printArea.appendChild(sticker); makeDraggable(sticker);
     }
 
     document.getElementById('customStickerInput').addEventListener('change', function(e) {
         if(e.target.files[0]) {
             const reader = new FileReader();
             reader.onload = function(event) {
-                const sticker = document.createElement('div');
-                sticker.className = 'drag-sticker';
-                sticker.title = "더블클릭하여 삭제";
-                const img = document.createElement('img');
-                img.src = event.target.result;
-                sticker.appendChild(img);
+                const sticker = document.createElement('div'); sticker.className = 'drag-sticker'; sticker.title = "더블클릭하여 삭제";
+                const img = document.createElement('img'); img.src = event.target.result; sticker.appendChild(img);
                 sticker.style.left = '100px'; sticker.style.top = '100px';
-                sticker.dataset.scale = "100"; sticker.dataset.scaleX = "100"; sticker.dataset.scaleY = "100";
-                sticker.dataset.rotate = "0"; sticker.dataset.hue = "0"; sticker.dataset.opacity = "100"; sticker.dataset.brightness = "100";
-                updateStickerStyle(sticker);
-                sticker.ondblclick = function() { sticker.remove(); };
-                printArea.appendChild(sticker);
-                makeDraggable(sticker);
+                sticker.dataset.scale = "100"; sticker.dataset.scaleX = "100"; sticker.dataset.scaleY = "100"; sticker.dataset.rotate = "0"; sticker.dataset.hue = "0"; sticker.dataset.opacity = "100"; sticker.dataset.brightness = "100";
+                updateStickerStyle(sticker); sticker.ondblclick = function() { sticker.remove(); };
+                printArea.appendChild(sticker); makeDraggable(sticker);
             }
-            reader.readAsDataURL(e.target.files[0]);
-            e.target.value = ''; 
+            reader.readAsDataURL(e.target.files[0]); e.target.value = ''; 
         }
     });
 
-    // ★ 드래그 오류 완벽 해결 (PC/모바일 좌표 계산 분리) ★
+    // ★ 드래그 오류 완벽 해결 (PC/모바일 좌표 계산) ★
     function makeDraggable(elmnt) {
         let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        elmnt.onmousedown = dragMouseDown;
-        elmnt.ontouchstart = dragMouseDown; 
+        elmnt.onmousedown = dragMouseDown; elmnt.ontouchstart = dragMouseDown; 
 
         function dragMouseDown(e) {
             e = e || window.event;
-            
-            if(selectedText) {
-                selectedText.classList.remove('selected-text'); selectedText = null;
-                textSizeInput.disabled = true; textWeightInput.disabled = true;
-                textSizeDisplay.innerText = '-'; textWeightDisplay.innerText = '-';
-            }
-
+            if(selectedText) { selectedText.classList.remove('selected-text'); selectedText = null; textSizeInput.disabled = true; textWeightInput.disabled = true; textSizeDisplay.innerText = '-'; textWeightDisplay.innerText = '-'; }
             if (selectedSticker && selectedSticker !== elmnt) { selectedSticker.classList.remove('selected-sticker'); }
-            selectedSticker = elmnt;
-            selectedSticker.classList.add('selected-sticker');
+            selectedSticker = elmnt; selectedSticker.classList.add('selected-sticker');
 
-            document.getElementById('stickerScale').value = selectedSticker.dataset.scale || 100;
-            document.getElementById('stickerScaleX').value = selectedSticker.dataset.scaleX || 100;
-            document.getElementById('stickerScaleY').value = selectedSticker.dataset.scaleY || 100;
-            document.getElementById('stickerRotate').value = selectedSticker.dataset.rotate || 0;
-            document.getElementById('stickerBrightness').value = selectedSticker.dataset.brightness || 100;
-            document.getElementById('stickerHue').value = selectedSticker.dataset.hue || 0;
-            document.getElementById('stickerOpacity').value = selectedSticker.dataset.opacity || 100;
+            document.getElementById('stickerScale').value = selectedSticker.dataset.scale || 100; document.getElementById('stickerScaleX').value = selectedSticker.dataset.scaleX || 100; document.getElementById('stickerScaleY').value = selectedSticker.dataset.scaleY || 100; document.getElementById('stickerRotate').value = selectedSticker.dataset.rotate || 0; document.getElementById('stickerBrightness').value = selectedSticker.dataset.brightness || 100; document.getElementById('stickerHue').value = selectedSticker.dataset.hue || 0; document.getElementById('stickerOpacity').value = selectedSticker.dataset.opacity || 100;
 
-            if(e.type === 'touchstart') {
-                pos3 = e.touches[0].clientX;
-                pos4 = e.touches[0].clientY;
-            } else {
-                e.preventDefault();
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-            }
-            document.onmouseup = closeDragElement;
-            document.onmousemove = elementDrag;
-            document.ontouchend = closeDragElement;
-            document.ontouchmove = elementDrag;
+            if(e.type === 'touchstart') { pos3 = e.touches[0].clientX; pos4 = e.touches[0].clientY; } 
+            else { e.preventDefault(); pos3 = e.clientX; pos4 = e.clientY; }
+            document.onmouseup = closeDragElement; document.onmousemove = elementDrag;
+            document.ontouchend = closeDragElement; document.ontouchmove = elementDrag;
         }
 
         function elementDrag(e) {
             e = e || window.event;
             let clientX, clientY;
-            
-            if (e.type === 'touchmove') {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else {
-                e.preventDefault();
-                clientX = e.clientX;
-                clientY = e.clientY;
-            }
+            if (e.type === 'touchmove') { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; } 
+            else { e.preventDefault(); clientX = e.clientX; clientY = e.clientY; }
 
-            // 화면이 모바일(900px 이하)이라서 0.55배 축소된 상태라면, 마우스 이동 거리도 그 비율에 맞게 계산해야 정상적으로 따라갑니다.
             const isMobile = window.innerWidth <= 900;
             const scaleFactor = isMobile ? 0.55 : 1; 
 
-            pos1 = (pos3 - clientX) / scaleFactor;
-            pos2 = (pos4 - clientY) / scaleFactor;
-            pos3 = clientX;
-            pos4 = clientY;
-            
-            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+            pos1 = (pos3 - clientX) / scaleFactor; pos2 = (pos4 - clientY) / scaleFactor;
+            pos3 = clientX; pos4 = clientY;
+            elmnt.style.top = (elmnt.offsetTop - pos2) + "px"; elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
         }
 
         function closeDragElement() {
-            document.onmouseup = null;
-            document.onmousemove = null;
-            document.ontouchend = null;
-            document.ontouchmove = null;
+            document.onmouseup = null; document.onmousemove = null; document.ontouchend = null; document.ontouchmove = null;
         }
     }
 
-    // ★ 모바일 저장 오류/작은 크기 저장 완벽 해결 ★
+    // ★ 모바일 저장 오류 해결 (안전한 오버레이 방식 및 원본 크기 고정 캡처) ★
     function saveCard() {
         clearSelections(); 
-
         const area = document.getElementById('idCardSet');
-        const wrapper = document.getElementById('mobileScaleWrapper');
         const isMobile = window.innerWidth <= 900;
         const currentFont = document.getElementById('fontSelect').value;
-        
-        // PC는 그대로 유지, 모바일은 초고화질(4배수) 적용
+        const btn = document.getElementById('saveActionBtn');
+        const originalText = btn.innerText;
+
+        btn.innerText = "⏳ 이미지 생성 중...";
+        btn.disabled = true;
+
+        // 화면 축소와 상관없이 완벽하게 630x480 (사원증 2장 + 여백) 원본 크기 추출
         const options = { 
-            pixelRatio: isMobile ? 4 : 3, 
+            pixelRatio: 3, // 고화질
             useCORS: true, 
             cacheBust: true,
-            style: isMobile ? {
-                transform: 'scale(1)',
+            width: 590, // 280(카드) + 30(간격) + 280(카드)
+            height: 440, // 카드 높이
+            style: {
+                transform: 'scale(1)', 
                 transformOrigin: 'top left',
-                fontFamily: currentFont // 폰트 강제 주입
-            } : {
-                fontFamily: currentFont 
+                fontFamily: currentFont,
+                margin: '0',
+                padding: '0'
             }
         };
 
-        if (isMobile) { wrapper.style.transform = 'scale(1)'; }
+        htmlToImage.toPng(area, options)
+            .then(function (dataUrl) {
+                btn.innerText = originalText;
+                btn.disabled = false;
 
-        setTimeout(() => {
-            htmlToImage.toPng(area, options)
-                .then(function () {
-                    setTimeout(() => {
-                        htmlToImage.toPng(area, options)
-                            .then(function (dataUrl) {
-                                if (isMobile) wrapper.style.transform = 'scale(0.55)';
-                                const link = document.createElement('a');
-                                link.download = 'ARCH_사원증.png';
-                                link.href = dataUrl;
-                                link.click();
-                            })
-                            .catch(function (error) {
-                                if (isMobile) wrapper.style.transform = 'scale(0.55)';
-                                alert("저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
-                            });
-                    }, 200); 
-                })
-                .catch(function (error) {
-                    if (isMobile) wrapper.style.transform = 'scale(0.55)';
-                    alert("이미지 처리 중 오류가 발생했습니다.");
-                });
-        }, 100);
+                if (isMobile) {
+                    // 모바일에서는 다운로드 차단(에러)을 막기 위해 화면에 띄워서 저장하도록 유도
+                    showMobileResult(dataUrl);
+                } else {
+                    // PC는 바로 다운로드
+                    const link = document.createElement('a');
+                    link.download = 'ARCH_사원증.png';
+                    link.href = dataUrl;
+                    link.click();
+                }
+            })
+            .catch(function (error) {
+                btn.innerText = originalText;
+                btn.disabled = false;
+                alert("저장 중 오류가 발생했습니다. 브라우저 설정을 확인해주세요.");
+            });
+    }
+
+    // 모바일용 결과 이미지 팝업
+    function showMobileResult(dataUrl) {
+        let overlay = document.getElementById('mobileResultOverlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'mobileResultOverlay';
+            overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;';
+            document.body.appendChild(overlay);
+        }
+        overlay.innerHTML = `
+            <div style="color:white; font-size:18px; font-weight:bold; margin-bottom:15px; text-align:center;">
+                ✅ 사원증 생성 완료!<br>
+                <span style="font-size:13px; font-weight:normal; color:#ffd32a;">아래 완성된 이미지를 꾹~ 눌러서 '사진 앱에 저장' 하세요.</span>
+            </div>
+            <img src="${dataUrl}" style="max-width:100%; max-height:70vh; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+            <button onclick="document.getElementById('mobileResultOverlay').style.display='none'" style="margin-top:20px; padding:12px 24px; background:#fff; color:#333; border:none; border-radius:8px; font-size:16px; font-weight:bold;">닫기</button>
+        `;
+        overlay.style.display = 'flex';
     }
 </script>
 
