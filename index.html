@@ -280,7 +280,7 @@
         flex-shrink: 0;
     }
 
-    /* 앞면 공통 디자인 요소 (뒷면이 타입 2일 때도 사용) */
+    /* 앞면 공통 디자인 요소 */
     .card-face .logo {
         margin-top: 25px;
         font-size: 34px;
@@ -342,7 +342,7 @@
         letter-spacing: 1px;
     }
 
-    /* 뒷면 전용 레이아웃 (타입 1 용 - 기존 왼쪽 바) */
+    /* 뒷면 전용 레이아웃 (타입 1 용 - 왼쪽 바) */
     .back-layout { display: flex; flex-direction: row; width: 100%; height: 100%; }
     .back-layout .side-bar {
         background-color: var(--theme-color-back);
@@ -416,50 +416,31 @@
         opacity: 0.8;
     }
 
-    /* 드래그 가능한 스티커 스타일 */
-    .drag-sticker {
-        position: absolute;
-        cursor: grab;
-        user-select: none;
-        z-index: 999; 
-        font-size: 35px; 
-        title: "더블클릭하면 삭제됩니다!";
-        transition: filter 0.1s, transform 0.1s; 
-    }
-    .drag-sticker:active { cursor: grabbing; }
-    .drag-sticker img {
-        width: 80px; 
-        height: auto;
-        pointer-events: none; 
-    }
-    .selected-sticker {
-        border: 2px dashed #ff4757 !important; 
-        box-sizing: content-box; 
-        border-radius: 8px;
-    }
-
-    /* ★ 모바일 환경 레이아웃 완벽 조정 (바를 위로) ★ */
+    /* ★ 모바일 환경 레이아웃 완벽 조정 (바를 위로, 사원증은 무조건 나란히!) ★ */
     @media (max-width: 900px) {
         body { 
-            flex-direction: column; /* 세로 배치 */
+            flex-direction: column; /* 위(제작바) 아래(사원증) 배치 */
         }
         .setup-panel { 
             width: 100%; 
-            height: 45vh; /* 화면 상단 45% 고정 */
+            height: 42vh; /* 상단 42% 고정 */
             border-bottom: 2px solid #ddd;
-            padding: 15px;
+            padding: 15px 20px;
         }
         .canvas-container { 
             width: 100%;
-            height: 55vh; /* 화면 하단 55% 고정 */
-            align-items: flex-start; /* 카드가 위에 붙도록 */
-            padding: 20px 10px;
+            height: 58vh; /* 하단 58% 고정 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            overflow: hidden; /* 스크롤바 숨김 (축소해서 한눈에 보이게 함) */
         }
         .print-area { 
-            flex-direction: column; /* 앞, 뒷면 위아래로 배치 */
-            gap: 20px; 
-            transform: scale(0.85); /* 모바일 화면에 맞게 축소 */
-            transform-origin: top center;
+            flex-direction: row !important; /* 모바일에서도 무조건 나란히 가로 배치! */
+            gap: 15px; 
+            transform: scale(0.6); /* 모바일 화면에 두 개가 나란히 쏙 들어가도록 60% 축소 */
+            transform-origin: center center; /* 가운데를 기준으로 축소 */
         }
     }
 </style>
