@@ -441,11 +441,22 @@
             gap: 15px; 
             transform: scale(0.6); /* 좁은 화면에 두 장을 담기 위한 축소 */
             transform-origin: center center; 
+            transition: transform 0s; /* 깜빡임 최소화 */
         }
     }
 </style>
 </head>
 <body>
+
+<div style="position: absolute; top: -9999px; left: -9999px; visibility: hidden;">
+    <span style="font-family: 'Noto Sans KR';">preload</span>
+    <span style="font-family: 'Noto Serif KR';">preload</span>
+    <span style="font-family: 'Playfair Display';">preload</span>
+    <span style="font-family: 'Cinzel';">preload</span>
+    <span style="font-family: 'Galmuri9';">preload</span>
+    <span style="font-family: 'Jua';">preload</span>
+    <span style="font-family: 'Gaegu';">preload</span>
+</div>
 
 <div class="setup-panel">
     
@@ -1048,42 +1059,35 @@
 
         const area = document.getElementById('idCardSet');
         const isMobile = window.innerWidth <= 900;
-        const currentFont = document.getElementById('fontSelect').value;
         
         // PC는 그대로 유지 (pixelRatio: 3), 모바일은 초고화질 보장 (pixelRatio: 4)
-        // 캡처용 가상 복제본에만 크기 복구(scale(1))와 폰트를 강제 적용하여 폰트 풀림 현상을 완벽히 차단!
         const options = { 
             pixelRatio: isMobile ? 4 : 3, 
             useCORS: true, 
-            cacheBust: true,
-            style: isMobile ? {
-                transform: 'scale(1)',
-                transformOrigin: 'top left',
-                fontFamily: currentFont // 모바일에서 폰트 깨짐 방지용 강제 주입
-            } : {
-                fontFamily: currentFont // PC에서도 혹시 모를 버그 방지용 주입
-            }
+            cacheBust: true
         };
 
-        // 폰트 로드 웜업 및 최종 캡처를 위한 2중 렌더링
-        htmlToImage.toPng(area, options)
-            .then(function () {
-                setTimeout(() => {
-                    htmlToImage.toPng(area, options)
-                        .then(function (dataUrl) {
-                            const link = document.createElement('a');
-                            link.download = 'ARCH_사원증.png';
-                            link.href = dataUrl;
-                            link.click();
-                        })
-                        .catch(function (error) {
-                            alert("저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
-                        });
-                }, 200); // 폰트 로딩 대기 시간 확보
-            })
-            .catch(function (error) {
-                alert("이미지 처리 중 오류가 발생했습니다.");
-            });
+        // 모바일: 캡처 직전에만 100% 원본 크기로 강제 확대
+        if (isMobile) {
+            area.style.transform = 'scale(1)';
+        }
+
+        // 브라우저가 화면을 100%로 다시 그리고 폰트를 적용할 시간을 넉넉히 줌 (0.3초 대기)
+        setTimeout(() => {
+            htmlToImage.toPng(area, options)
+                .then(function (dataUrl) {
+                    if (isMobile) area.style.transform = ''; // 다시 원래 축소된 화면으로 복구
+
+                    const link = document.createElement('a');
+                    link.download = 'ARCH_사원증.png';
+                    link.href = dataUrl;
+                    link.click();
+                })
+                .catch(function (error) {
+                    if (isMobile) area.style.transform = '';
+                    alert("저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+                });
+        }, 300);
     }
 </script>
 
