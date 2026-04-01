@@ -164,34 +164,53 @@
     }
     .drag-sticker:active { cursor: grabbing; }
     .drag-sticker img { width: 80px; height: auto; pointer-events: none; }
-    .selected-sticker { border: 2px dashed #ff4757 !important; }
+    .selected-sticker { border: 2px dashed #ff4757 !important; box-sizing: content-box; border-radius: 8px; }
 
-    /* 모바일 UI 결과 오버레이 */
-    #mobileResultOverlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; display:none; flex-direction:column; align-items:center; justify-content:center; padding:20px; box-sizing:border-box; }
-
+    /* ★ 모바일 환경 전용 UI ★ */
     @media screen and (max-width: 900px) {
         body { flex-direction: column !important; }
-        .setup-panel { width: 100% !important; height: 45vh !important; border-bottom: 2px solid #ddd; padding: 15px 20px; order: 1 !important; }
-        .canvas-container { width: 100% !important; height: 55vh !important; padding: 10px 0 !important; align-items: flex-start !important; order: 2 !important; }
-        #mobileScaleWrapper { transform: scale(0.55); transform-origin: top center; }
-        .print-area { flex-direction: row !important; gap: 20px !important; }
+        .setup-panel { 
+            width: 100% !important; height: 45vh !important; 
+            border-bottom: 2px solid #ddd; padding: 15px 20px; 
+            order: 1 !important; 
+        }
+        .canvas-container { 
+            width: 100% !important; height: 55vh !important; 
+            padding: 10px 0 !important; align-items: flex-start !important; 
+            order: 2 !important; 
+        }
+        #mobileScaleWrapper {
+            transform: scale(0.55); /* 나란히 보이기 위한 축소 */
+            transform-origin: top center;
+        }
+        .print-area { 
+            flex-direction: row !important; /* 가로 나란히 고정 */
+            gap: 20px !important; 
+        }
     }
 </style>
 </head>
 <body>
 
+<div style="position: absolute; top: -9999px; left: -9999px; visibility: hidden;">
+    <span style="font-family: 'Noto Sans KR';">preload</span><span style="font-family: 'Noto Serif KR';">preload</span>
+    <span style="font-family: 'Playfair Display';">preload</span><span style="font-family: 'Cinzel';">preload</span>
+    <span style="font-family: 'Galmuri9';">preload</span><span style="font-family: 'Jua';">preload</span><span style="font-family: 'Gaegu';">preload</span>
+</div>
+
 <div class="setup-panel">
     <div class="control-group">
         <label class="title">✨ 전체 폰트 및 개별 글씨 설정</label>
         <select id="fontSelect" class="custom-select">
-            <option value="'Noto Sans KR', sans-serif">Noto Sans KR (고딕)</option>
-            <option value="'Noto Serif KR', serif">Noto Serif KR (명조)</option>
-            <option value="'Playfair Display', serif">Playfair Display</option>
-            <option value="'Cinzel', serif">Cinzel</option>
-            <option value="'Galmuri9', sans-serif">Galmuri9 (비트/픽셀)</option>
-            <option value="'Jua', sans-serif">Jua (귀여움 1)</option>
-            <option value="'Gaegu', cursive">Gaegu (귀여움 2)</option>
+            <option value="'Noto Sans KR', sans-serif" style="font-family: 'Noto Sans KR', sans-serif;">Noto Sans KR (고딕)</option>
+            <option value="'Noto Serif KR', serif" style="font-family: 'Noto Serif KR', serif;">Noto Serif KR (명조)</option>
+            <option value="'Playfair Display', serif" style="font-family: 'Playfair Display', serif;">Playfair Display</option>
+            <option value="'Cinzel', serif" style="font-family: 'Cinzel', serif;">Cinzel</option>
+            <option value="'Galmuri9', sans-serif" style="font-family: 'Galmuri9', sans-serif;">Galmuri9 (비트/픽셀)</option>
+            <option value="'Jua', sans-serif" style="font-family: 'Jua', sans-serif;">Jua (귀여움 1)</option>
+            <option value="'Gaegu', cursive" style="font-family: 'Gaegu', cursive;">Gaegu (귀여움 2)</option>
         </select>
+        
         <div class="text-edit-panel">
             <label style="font-size:11px; color:#555;">👆 오른쪽 사원증에서 변경할 <b>글씨를 클릭</b>하세요!</label>
             <div class="slider-row"><span class="label">크기</span><input type="range" id="textSizeInput" min="8" max="60" value="14" disabled><span class="value" id="textSizeDisplay">-</span></div>
@@ -204,9 +223,9 @@
     <div class="control-group">
         <label class="title">🔄 뒷면 디자인 타입</label>
         <select id="backTypeSelect" class="custom-select">
-            <option value="type-1">타입 1: 기본 (왼쪽 바)</option>
+            <option value="type-1">타입 1: 기본 (왼쪽 텍스트 바)</option>
             <option value="type-2">타입 2: 윗면과 동일 형태</option>
-            <option value="type-3">타입 3: 상단 중앙 바</option>
+            <option value="type-3">타입 3: 상단 중앙 바 (사진 모양)</option>
         </select>
     </div>
 
@@ -230,7 +249,7 @@
         <div class="color-grid">
             <div class="color-item"><label>바탕</label><input type="color" id="bgColorFront" value="#ffffff"></div>
             <div class="color-item"><label>테두리</label><input type="color" id="borderColorFront" value="#cfd4db"></div>
-            <div class="color-item"><label>포인트</label><input type="color" id="themeColorFront" value="#a0a5aa"></div>
+            <div class="color-item"><label>포인트(바)</label><input type="color" id="themeColorFront" value="#a0a5aa"></div>
             <div class="color-item"><label>로고</label><input type="color" id="logoColorFront" value="#4a4d52"></div>
             <div class="color-item"><label>이름</label><input type="color" id="nameColorFront" value="#111111"></div>
             <div class="color-item"><label>등급</label><input type="color" id="rankColorFront" value="#666666"></div>
@@ -243,10 +262,10 @@
         <div class="color-grid">
             <div class="color-item"><label>바탕</label><input type="color" id="bgColorBack" value="#ffffff"></div>
             <div class="color-item"><label>테두리</label><input type="color" id="borderColorBack" value="#cfd4db"></div>
-            <div class="color-item"><label>포인트</label><input type="color" id="themeColorBack" value="#a0a5aa"></div>
-            <div class="color-item"><label>로고</label><input type="color" id="logoColorBack" value="#4a4d52"></div>
-            <div class="color-item"><label>내용</label><input type="color" id="nameColorBack" value="#111111"></div>
-            <div class="color-item"><label>등급</label><input type="color" id="rankColorBack" value="#666666"></div>
+            <div class="color-item"><label>포인트(바)</label><input type="color" id="themeColorBack" value="#a0a5aa"></div>
+            <div class="color-item"><label>로고(타입2)</label><input type="color" id="logoColorBack" value="#4a4d52"></div>
+            <div class="color-item"><label>이름/내용</label><input type="color" id="nameColorBack" value="#111111"></div>
+            <div class="color-item"><label>등급(타입2)</label><input type="color" id="rankColorBack" value="#666666"></div>
             <div class="color-item"><label>바 글씨</label><input type="color" id="bottomTextColorBack" value="#ffffff"></div>
         </div>
     </div>
@@ -257,26 +276,26 @@
         <label class="title">🚀 스티커 상세 보정</label>
         <div class="sticker-edit-grid">
             <div style="display: flex; flex-direction: column; gap: 12px;">
-                <div class="slider-row"><span class="label">크기</span><input type="range" id="stickerScale" min="10" max="300" value="100"></div>
-                <div class="slider-row"><span class="label">너비</span><input type="range" id="stickerScaleX" min="-300" max="300" value="100"></div>
-                <div class="slider-row"><span class="label">높이</span><input type="range" id="stickerScaleY" min="-300" max="300" value="100"></div>
-                <div class="slider-row"><span class="label">회전</span><input type="range" id="stickerRotate" min="0" max="360" value="0"></div>
+                <div class="slider-row"><span class="label">통합 크기</span><input type="range" id="stickerScale" min="10" max="300" value="100"></div>
+                <div class="slider-row"><span class="label">너비반전</span><input type="range" id="stickerScaleX" min="-300" max="300" value="100"></div>
+                <div class="slider-row"><span class="label">높이반전</span><input type="range" id="stickerScaleY" min="-300" max="300" value="100"></div>
+                <div class="slider-row"><span class="label">회전각도</span><input type="range" id="stickerRotate" min="0" max="360" value="0"></div>
             </div>
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <div class="slider-row"><span class="label">밝기</span><input type="range" id="stickerBrightness" min="0" max="200" value="100"></div>
-                <div class="slider-row"><span class="label">색상</span><input type="range" id="stickerHue" min="0" max="360" value="0"></div>
+                <div class="slider-row"><span class="label">색상변경</span><input type="range" id="stickerHue" min="0" max="360" value="0"></div>
                 <div class="slider-row"><span class="label">투명도</span><input type="range" id="stickerOpacity" min="20" max="100" value="100"></div>
             </div>
         </div>
     </div>
 
     <div class="control-group" style="margin-top: 10px;">
-        <label class="title">✨ 스티커 추가</label>
+        <label class="title">✨ 스티커 추가 (클릭 / 드래그 / 더블클릭 삭제)</label>
         <div class="sticker-container">
             <div class="sticker-buttons">
                 <label class="custom-sticker-label">+ 내 사진 추가<input type="file" id="customStickerInput" accept="image/*" style="display:none;"></label>
                 <script>
-                    const emojis = ['🍋','💞','🐽','😇','💢','💘','👆','🍰','☀️','❄️','🍑','🌻','🍫','🎀','🧸','🍓','👑','🐈','🦊','😊','🐾','🫧','🐱','🦋','🍎','🐰','🌸','🌟','🌈','🔥','💧','❤️','✨','🍒'];
+                    const emojis = ['🍋','👻','💞','🐽','🐖','😇','💢','💘','🦴','🗨️','💋','👆','🪻','🍰','☁️','🌙','☀️','⚡','❄️','🍊','🍑','🌻','🧀','🍫','🎀','🕶️','🎵','🧸','🍓','👑','🪽','🐈‍⬛','🐈','🦊','🐶','😊','🐬','🐾','🐤','🐸','🫧','🍬','🍭','🐱','🦋','🥭','🍎','🐰','🌸','🌹','🌼','🌟','⭐','🌈','🔥','💧','🌿','🌪️','🧊','❤️','✨','🍒'];
                     emojis.forEach(e => document.write(`<button onclick="addEmojiSticker('${e}')">${e}</button>`));
                 </script>
             </div>
@@ -298,27 +317,32 @@
                 </div>
                 <div class="bottom-bar selectable-text" contenteditable="true">HARMONY DIV.</div>
             </div>
+
             <div class="id-card" id="cardBack">
                 <div class="back-layout type-1">
                     <div class="side-bar"><div class="side-text selectable-text" contenteditable="true">■ Kim cherry mango</div></div>
-                    <div class="content"><div class="notice selectable-text" contenteditable="true">| 주의사항</div><p class="selectable-text" contenteditable="true">사원증은 항상 소지해야 합니다.<br>타인에게 양도·대여할 수 없습니다.<br>분실 시 재발급을 받아야 합니다.<br><br></p></div>
+                    <div class="content">
+                        <div class="notice selectable-text" contenteditable="true">| 주의사항</div>
+                        <p class="selectable-text" contenteditable="true">사원증은 항상 소지해야 합니다.<br>타인에게 양도·대여할 수 없습니다.<br>분실 시 재발급을 받아야 합니다.<br><br></p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div id="mobileResultOverlay">
-    <div style="color:white; font-size:18px; font-weight:bold; margin-bottom:15px; text-align:center;">✅ 사원증 생성 완료!<br><span style="font-size:13px; font-weight:normal; color:#ffd32a;">이미지를 꾹 눌러서 '저장' 하세요.</span></div>
-    <img id="resultImage" style="max-width:100%; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
-    <button onclick="document.getElementById('mobileResultOverlay').style.display='none'" style="margin-top:20px; padding:12px 24px; background:#fff; color:#333; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">창 닫기</button>
+<div id="mobileResultOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;">
+    <div style="color:white; font-size:18px; font-weight:bold; margin-bottom:15px; text-align:center;">✅ 사원증 생성 완료!<br><span style="font-size:13px; font-weight:normal; color:#ffd32a;">아래 이미지를 꾹~ 눌러서 '사진 앱에 저장' 하세요.</span></div>
+    <img id="resultImage" style="max-width:100%; max-height:70vh; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+    <button onclick="document.getElementById('mobileResultOverlay').style.display='none'" style="margin-top:20px; padding:12px 24px; background:#fff; color:#333; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer;">창 닫기</button>
 </div>
 
 <script>
     const root = document.documentElement.style;
     const printArea = document.getElementById('idCardSet');
-    let selectedSticker = null, selectedText = null; 
-    let fPhoto = "", bPhoto = ""; // 사진 데이터 백업용
+    let selectedSticker = null; 
+    let selectedText = null; 
+    let fPhoto = "", bPhoto = ""; // 사진 데이터 보존용
 
     // --- 글꼴 변경 ---
     document.getElementById('fontSelect').addEventListener('change', function(e) {
@@ -326,12 +350,13 @@
         this.style.fontFamily = e.target.value;
     });
 
-    // --- 뒷면 디자인 변경 (사진 상태 유지) ---
+    // --- 뒷면 디자인 변경 ---
     document.getElementById('backTypeSelect').addEventListener('change', function(e) {
         const type = e.target.value;
         const cardBack = document.getElementById('cardBack');
         const backPhotoUploadContainer = document.getElementById('backPhotoUploadContainer');
         clearSelections();
+
         if (type === 'type-1') {
             cardBack.className = 'id-card';
             cardBack.innerHTML = `<div class="back-layout type-1"><div class="side-bar"><div class="side-text selectable-text" contenteditable="true">■ Kim cherry mango</div></div><div class="content"><div class="notice selectable-text" contenteditable="true">| 주의사항</div><p class="selectable-text" contenteditable="true">사원증은 항상 소지해야 합니다.<br>타인에게 양도·대여할 수 없습니다.<br>분실 시 재발급을 받아야 합니다.<br><br></p></div></div>`;
@@ -342,140 +367,216 @@
             backPhotoUploadContainer.style.display = 'none';
         } else if (type === 'type-2') {
             cardBack.className = 'id-card card-face';
-            cardBack.innerHTML = `<div class="logo selectable-text">ARCH</div><div class="photo-wrapper"><img id="photoPreviewBack" src="${bPhoto}"></div><div class="info-text"><div class="name selectable-text" contenteditable="true">NOBEL</div><div class="rank selectable-text" contenteditable="true"> S-불속성 센티넬 / 가이드</div></div><div class="bottom-bar selectable-text" contenteditable="true" style="background-color: var(--theme-color-back);">HARMONY DIV.</div>`;
+            cardBack.innerHTML = `<div class="logo selectable-text">ARCH</div><div class="photo-wrapper"><img id="photoPreviewBack" src="${bPhoto}" alt=""></div><div class="info-text"><div class="name selectable-text" contenteditable="true">NOBEL</div><div class="rank selectable-text" contenteditable="true"> S-불속성 센티넬 / 가이드</div></div><div class="bottom-bar selectable-text" contenteditable="true" style="background-color: var(--theme-color-back);">HARMONY DIV.</div>`;
             backPhotoUploadContainer.style.display = 'block';
             if(bPhoto) setTimeout(() => fitImage(document.getElementById('photoPreviewBack')), 10);
         }
     });
 
-    const textSizeInput = document.getElementById('textSizeInput'), textWeightInput = document.getElementById('textWeightInput');
-    textSizeInput.addEventListener('input', function(e) { if (selectedText) { selectedText.style.fontSize = e.target.value + 'px'; document.getElementById('textSizeDisplay').innerText = e.target.value; }});
-    textWeightInput.addEventListener('input', function(e) { if (selectedText) { selectedText.style.fontWeight = e.target.value; document.getElementById('textWeightDisplay').innerText = e.target.value; }});
+    const textSizeInput = document.getElementById('textSizeInput');
+    const textSizeDisplay = document.getElementById('textSizeDisplay');
+    const textWeightInput = document.getElementById('textWeightInput');
+    const textWeightDisplay = document.getElementById('textWeightDisplay');
+
+    textSizeInput.addEventListener('input', function(e) { if (selectedText) { selectedText.style.fontSize = e.target.value + 'px'; textSizeDisplay.innerText = e.target.value; }});
+    textWeightInput.addEventListener('input', function(e) { if (selectedText) { selectedText.style.fontWeight = e.target.value; textWeightDisplay.innerText = e.target.value; }});
 
     function clearSelections() {
-        if (selectedSticker) selectedSticker.classList.remove('selected-sticker');
-        if (selectedText) selectedText.classList.remove('selected-text');
-        selectedSticker = null; selectedText = null; textSizeInput.disabled = textWeightInput.disabled = true;
+        if (selectedSticker) { selectedSticker.classList.remove('selected-sticker'); selectedSticker = null; }
+        if (selectedText) {
+            selectedText.classList.remove('selected-text'); selectedText = null;
+            textSizeInput.disabled = true; textWeightInput.disabled = true;
+            textSizeDisplay.innerText = '-'; textWeightDisplay.innerText = '-';
+        }
+    }
+
+    function updateStickerStyle(sticker) {
+        const hue = sticker.dataset.hue || "0";
+        const opacity = (sticker.dataset.opacity || "100") / 100;
+        const brightness = (sticker.dataset.brightness || "100") / 100;
+        const baseScale = (sticker.dataset.scale || "100") / 100;
+        const scaleX = (sticker.dataset.scaleX || "100") / 100;
+        const scaleY = (sticker.dataset.scaleY || "100") / 100;
+        const finalScaleX = baseScale * scaleX;
+        const finalScaleY = baseScale * scaleY;
+        const rotate = sticker.dataset.rotate || "0";
+
+        sticker.style.filter = `hue-rotate(${hue}deg) opacity(${opacity}) brightness(${brightness})`;
+        sticker.style.transform = `rotate(${rotate}deg) scale(${finalScaleX}, ${finalScaleY})`;
     }
 
     printArea.addEventListener('click', (e) => {
-        const s = e.target.closest('.drag-sticker'), t = e.target.closest('.selectable-text');
-        if(s || t) clearSelections();
-        if (s) {
-            selectedSticker = s; s.classList.add('selected-sticker');
-            ['Scale','ScaleX','ScaleY','Rotate','Brightness','Hue','Opacity'].forEach(k => document.getElementById('sticker'+k).value = s.dataset[k.toLowerCase()] || 100);
-        } else if (t) {
-            selectedText = t; t.classList.add('selected-text');
-            textSizeInput.value = parseInt(window.getComputedStyle(t).fontSize); textWeightInput.value = window.getComputedStyle(t).fontWeight;
-            textSizeInput.disabled = textWeightInput.disabled = false;
+        const clickedSticker = e.target.closest('.drag-sticker');
+        const clickedText = e.target.closest('.selectable-text');
+
+        if (selectedSticker && selectedSticker !== clickedSticker) { selectedSticker.classList.remove('selected-sticker'); selectedSticker = null; }
+        if (selectedText && selectedText !== clickedText) { selectedText.classList.remove('selected-text'); selectedText = null; textSizeInput.disabled = true; textWeightInput.disabled = true; textSizeDisplay.innerText = '-'; textWeightDisplay.innerText = '-'; }
+
+        if (clickedSticker) {
+            selectedSticker = clickedSticker; selectedSticker.classList.add('selected-sticker');
+            document.getElementById('stickerScale').value = selectedSticker.dataset.scale || 100; document.getElementById('stickerScaleX').value = selectedSticker.dataset.scaleX || 100;
+            document.getElementById('stickerScaleY').value = selectedSticker.dataset.scaleY || 100; document.getElementById('stickerRotate').value = selectedSticker.dataset.rotate || 0;
+            document.getElementById('stickerBrightness').value = selectedSticker.dataset.brightness || 100; document.getElementById('stickerHue').value = selectedSticker.dataset.hue || 0; document.getElementById('stickerOpacity').value = selectedSticker.dataset.opacity || 100;
+        } else if (clickedText) {
+            selectedText = clickedText; selectedText.classList.add('selected-text');
+            const currentStyle = window.getComputedStyle(selectedText);
+            const sizeValue = parseInt(currentStyle.fontSize);
+            textSizeInput.value = sizeValue; textSizeDisplay.innerText = sizeValue; textSizeInput.disabled = false;
+            let weightValue = currentStyle.fontWeight;
+            if (weightValue === 'bold') weightValue = 700; else if (weightValue === 'normal') weightValue = 400; else weightValue = parseInt(weightValue) || 400;
+            textWeightInput.value = weightValue; textWeightDisplay.innerText = weightValue; textWeightInput.disabled = false;
         }
     });
 
+    document.getElementById('stickerScale').addEventListener('input', (e) => { if (selectedSticker) { selectedSticker.dataset.scale = e.target.value; updateStickerStyle(selectedSticker); }});
+    document.getElementById('stickerScaleX').addEventListener('input', (e) => { if (selectedSticker) { selectedSticker.dataset.scaleX = e.target.value; updateStickerStyle(selectedSticker); }});
+    document.getElementById('stickerScaleY').addEventListener('input', (e) => { if (selectedSticker) { selectedSticker.dataset.scaleY = e.target.value; updateStickerStyle(selectedSticker); }});
+    document.getElementById('stickerRotate').addEventListener('input', (e) => { if (selectedSticker) { selectedSticker.dataset.rotate = e.target.value; updateStickerStyle(selectedSticker); }});
+    document.getElementById('stickerHue').addEventListener('input', (e) => { if (selectedSticker) { selectedSticker.dataset.hue = e.target.value; updateStickerStyle(selectedSticker); }});
+    document.getElementById('stickerOpacity').addEventListener('input', (e) => { if (selectedSticker) { selectedSticker.dataset.opacity = e.target.value; updateStickerStyle(selectedSticker); }});
+    document.getElementById('stickerBrightness').addEventListener('input', (e) => { if (selectedSticker) { selectedSticker.dataset.brightness = e.target.value; updateStickerStyle(selectedSticker); }});
+
     function fitImage(img) {
-        if(!img || !img.src) return;
-        const ratio = img.naturalWidth / img.naturalHeight;
-        if (ratio > 170/210) { img.style.width = 'auto'; img.style.height = '100%'; } else { img.style.width = '100%'; img.style.height = 'auto'; }
+        if(!img || !img.src || img.src.includes('undefined')) return;
+        const wrapperRatio = 164 / 204; 
+        const imgRatio = img.naturalWidth / img.naturalHeight;
+        if (imgRatio > wrapperRatio) { img.style.width = 'auto'; img.style.height = '100%'; } 
+        else { img.style.width = '100%'; img.style.height = 'auto'; }
     }
 
     function processImage(file, targetId, isFront) {
         const reader = new FileReader();
-        reader.onload = e => {
-            const data = e.target.result;
-            if(isFront) fPhoto = data; else bPhoto = data;
+        reader.onload = function(event) {
+            const dataUrl = event.target.result;
+            if(isFront) fPhoto = dataUrl; else bPhoto = dataUrl;
             const img = document.getElementById(targetId);
-            if(img) { img.src = data; img.onload = () => fitImage(img); }
-        };
+            if(img) {
+                img.src = dataUrl;
+                img.onload = () => fitImage(img);
+            }
+        }
         reader.readAsDataURL(file);
     }
-    document.getElementById('photoInputFront').addEventListener('change', e => e.target.files[0] && processImage(e.target.files[0], 'photoPreviewFront', true));
-    document.getElementById('photoInputBack').addEventListener('change', e => e.target.files[0] && processImage(e.target.files[0], 'photoPreviewBack', false));
+    
+    document.getElementById('photoInputFront').addEventListener('change', function(e) { if(e.target.files[0]) processImage(e.target.files[0], 'photoPreviewFront', true); });
+    document.getElementById('photoInputBack').addEventListener('change', function(e) { if(e.target.files[0]) processImage(e.target.files[0], 'photoPreviewBack', false); });
 
-    function updateSticker(el) {
-        const s = el.dataset;
-        const fx = (s.scale/100) * (s.scalex/100), fy = (s.scale/100) * (s.scaley/100);
-        el.style.filter = `hue-rotate(${s.hue}deg) opacity(${s.opacity/100}) brightness(${s.brightness/100})`;
-        el.style.transform = `rotate(${s.rotate}deg) scale(${fx}, ${fy})`;
-    }
-    ['Scale','ScaleX','ScaleY','Rotate','Brightness','Hue','Opacity'].forEach(id => {
-        document.getElementById('sticker'+id).addEventListener('input', e => { if(selectedSticker) { selectedSticker.dataset[id.toLowerCase()] = e.target.value; updateSticker(selectedSticker); }});
-    });
+    const colorInputs = [
+        { id: 'bgColorFront', variable: '--bg-color-front' }, { id: 'borderColorFront', variable: '--border-color-front' }, { id: 'themeColorFront', variable: '--theme-color-front' }, { id: 'logoColorFront', variable: '--logo-color-front' }, { id: 'nameColorFront', variable: '--name-color-front' }, { id: 'rankColorFront', variable: '--rank-color-front' }, { id: 'bottomTextColorFront', variable: '--bottom-text-color-front' },
+        { id: 'bgColorBack', variable: '--bg-color-back' }, { id: 'borderColorBack', variable: '--border-color-back' }, { id: 'themeColorBack', variable: '--theme-color-back' }, { id: 'logoColorBack', variable: '--logo-color-back' }, { id: 'nameColorBack', variable: '--name-color-back' }, { id: 'rankColorBack', variable: '--rank-color-back' }, { id: 'bottomTextColorBack', variable: '--bottom-text-color-back' }
+    ];
+    colorInputs.forEach(item => { const el = document.getElementById(item.id); if (el) el.addEventListener('input', (e) => { root.setProperty(item.variable, e.target.value); }); });
 
     function addEmojiSticker(emoji) {
-        const s = document.createElement('div'); s.className = 'drag-sticker'; s.innerText = emoji;
-        s.style.left = '100px'; s.style.top = '100px';
-        ['scale','scalex','scaley','rotate','hue','opacity','brightness'].forEach(k => s.dataset[k] = k==='rotate'||k==='hue'?0:100);
-        s.ondblclick = () => s.remove(); printArea.appendChild(s); makeDraggable(s);
+        const sticker = document.createElement('div');
+        sticker.className = 'drag-sticker'; sticker.innerText = emoji; sticker.title = "더블클릭하여 삭제";
+        sticker.style.left = '100px'; sticker.style.top = '100px';
+        sticker.dataset.scale = "100"; sticker.dataset.scaleX = "100"; sticker.dataset.scaleY = "100"; sticker.dataset.rotate = "0"; sticker.dataset.hue = "0"; sticker.dataset.opacity = "100"; sticker.dataset.brightness = "100";
+        updateStickerStyle(sticker); sticker.ondblclick = function() { sticker.remove(); };
+        printArea.appendChild(sticker); makeDraggable(sticker);
     }
 
     document.getElementById('customStickerInput').addEventListener('change', function(e) {
-        if(!e.target.files[0]) return;
-        const reader = new FileReader();
-        reader.onload = ev => {
-            const s = document.createElement('div'); s.className = 'drag-sticker'; s.innerHTML = `<img src="${ev.target.result}">`;
-            ['scale','scalex','scaley','rotate','hue','opacity','brightness'].forEach(k => s.dataset[k] = k==='rotate'||k==='hue'?0:100);
-            s.ondblclick = () => s.remove(); printArea.appendChild(s); makeDraggable(s);
-        };
-        reader.readAsDataURL(e.target.files[0]);
+        if(e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const sticker = document.createElement('div'); sticker.className = 'drag-sticker'; sticker.title = "더블클릭하여 삭제";
+                const img = document.createElement('img'); img.src = event.target.result; sticker.appendChild(img);
+                sticker.style.left = '100px'; sticker.style.top = '100px';
+                sticker.dataset.scale = "100"; sticker.dataset.scaleX = "100"; sticker.dataset.scaleY = "100"; sticker.dataset.rotate = "0"; sticker.dataset.hue = "0"; sticker.dataset.opacity = "100"; sticker.dataset.brightness = "100";
+                updateStickerStyle(sticker); sticker.ondblclick = function() { sticker.remove(); };
+                printArea.appendChild(sticker); makeDraggable(sticker);
+            }
+            reader.readAsDataURL(e.target.files[0]); e.target.value = ''; 
+        }
     });
 
-    function makeDraggable(el) {
-        let p1=0,p2=0,p3=0,p4=0;
-        el.onmousedown = el.ontouchstart = e => {
-            const ev = e.touches ? e.touches[0] : e; p3 = ev.clientX; p4 = ev.clientY;
-            document.onmousemove = document.ontouchmove = e => {
-                const ev2 = e.touches ? e.touches[0] : e;
-                const factor = window.innerWidth <= 900 ? 0.55 : 1;
-                p1 = (p3 - ev2.clientX)/factor; p2 = (p4 - ev2.clientY)/factor;
-                p3 = ev2.clientX; p4 = ev2.clientY;
-                el.style.top = (el.offsetTop - p2) + "px"; el.style.left = (el.offsetLeft - p1) + "px";
-            };
-            document.onmouseup = document.ontouchend = () => document.onmousemove = document.ontouchmove = null;
-        };
+    function makeDraggable(elmnt) {
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        elmnt.onmousedown = dragMouseDown; elmnt.ontouchstart = dragMouseDown; 
+
+        function dragMouseDown(e) {
+            e = e || window.event;
+            if(selectedText) { selectedText.classList.remove('selected-text'); selectedText = null; textSizeInput.disabled = true; textWeightInput.disabled = true; textSizeDisplay.innerText = '-'; textWeightDisplay.innerText = '-'; }
+            if (selectedSticker && selectedSticker !== elmnt) { selectedSticker.classList.remove('selected-sticker'); }
+            selectedSticker = elmnt; selectedSticker.classList.add('selected-sticker');
+
+            document.getElementById('stickerScale').value = selectedSticker.dataset.scale || 100; document.getElementById('stickerScaleX').value = selectedSticker.dataset.scaleX || 100; document.getElementById('stickerScaleY').value = selectedSticker.dataset.scaleY || 100; document.getElementById('stickerRotate').value = selectedSticker.dataset.rotate || 0; document.getElementById('stickerBrightness').value = selectedSticker.dataset.brightness || 100; document.getElementById('stickerHue').value = selectedSticker.dataset.hue || 0; document.getElementById('stickerOpacity').value = selectedSticker.dataset.opacity || 100;
+
+            if(e.type === 'touchstart') { pos3 = e.touches[0].clientX; pos4 = e.touches[0].clientY; } 
+            else { e.preventDefault(); pos3 = e.clientX; pos4 = e.clientY; }
+            document.onmouseup = closeDragElement; document.onmousemove = elementDrag;
+            document.ontouchend = closeDragElement; document.ontouchmove = elementDrag;
+        }
+
+        function elementDrag(e) {
+            e = e || window.event;
+            let clientX, clientY;
+            if (e.type === 'touchmove') { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; } 
+            else { e.preventDefault(); clientX = e.clientX; clientY = e.clientY; }
+
+            const isMobile = window.innerWidth <= 900;
+            const scaleFactor = isMobile ? 0.55 : 1; 
+
+            pos1 = (pos3 - clientX) / scaleFactor; pos2 = (pos4 - clientY) / scaleFactor;
+            pos3 = clientX; pos4 = clientY;
+            elmnt.style.top = (elmnt.offsetTop - pos2) + "px"; elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+        }
+
+        function closeDragElement() {
+            document.onmouseup = null; document.onmousemove = null; document.ontouchend = null; document.ontouchmove = null;
+        }
     }
 
-    const colorIds = ['bgColorFront','borderColorFront','themeColorFront','logoColorFront','nameColorFront','rankColorFront','bottomTextColorFront','bgColorBack','borderColorBack','themeColorBack','logoColorBack','nameColorBack','rankColorBack','bottomTextColorBack'];
-    colorIds.forEach(id => document.getElementById(id).addEventListener('input', e => root.setProperty('--'+id.replace(/[A-Z]/g, m=>'-'+m.toLowerCase()), e.target.value)));
-
-    // ★ 모바일 저장 사진 날아감 버그 해결 핵심 로직 ★
+    // ★ 단 한 번만! 캡처하되 메모리에 올려두어 속도와 안정성을 모두 잡은 최종 코드 ★
     async function saveCard() {
-        clearSelections();
+        clearSelections(); 
         const btn = document.getElementById('saveActionBtn');
         const wrapper = document.getElementById('mobileScaleWrapper');
         const isMobile = window.innerWidth <= 900;
         
-        btn.innerText = "⏳ 생성 중..."; btn.disabled = true;
+        btn.innerText = "⏳ 생성 중...";
+        btn.disabled = true;
 
-        // 1. 모든 이미지 태그가 캡처 준비가 되었는지 확실히 함 (Decoding)
+        // 1. 모든 이미지를 메모리에 강제로 확실히 띄움 (디코딩)
         const allImgs = printArea.querySelectorAll('img');
-        for (let img of allImgs) { if (img.src) try { await img.decode(); } catch(e) {} }
+        for (let img of allImgs) {
+            if (img.src) {
+                try { await img.decode(); } catch(e) {}
+            }
+        }
 
-        // 2. 모바일일 경우 캡처 순간에만 원본 크기로 복구
-        if (isMobile) wrapper.style.transform = 'scale(1)';
+        // 2. 모바일은 캡처 순간 스케일 100% 복구
+        if (isMobile) {
+            wrapper.style.transform = 'scale(1)';
+        }
 
+        // 3. 브라우저가 크기 변경을 인지할 아주 짧은 시간(100ms)만 부여 후, 딱 1번만 캡처 진행!
         setTimeout(() => {
-            const captureOptions = { pixelRatio: 3, cacheBust: true, useCORS: true };
-            
-            // 3. 모바일 브라우저의 렌더링 지연을 막기 위해 2중 캡처 수행
-            htmlToImage.toPng(printArea, captureOptions)
-                .then(() => htmlToImage.toPng(printArea, captureOptions))
-                .then(dataUrl => {
+            htmlToImage.toPng(printArea, { pixelRatio: 3, cacheBust: true, useCORS: true })
+                .then(function (dataUrl) {
                     if (isMobile) {
-                        wrapper.style.transform = 'scale(0.55)';
+                        wrapper.style.transform = 'scale(0.55)'; // 즉시 원상복구
                         document.getElementById('resultImage').src = dataUrl;
                         document.getElementById('mobileResultOverlay').style.display = 'flex';
                     } else {
                         const link = document.createElement('a');
-                        link.download = 'ARCH_사원증.png'; link.href = dataUrl; link.click();
+                        link.download = 'ARCH_사원증.png';
+                        link.href = dataUrl;
+                        link.click();
                     }
-                    btn.innerText = "사원증 이미지로 저장하기"; btn.disabled = false;
+                    btn.innerText = "사원증 이미지로 저장하기";
+                    btn.disabled = false;
                 })
-                .catch(() => {
+                .catch(function (error) {
                     if (isMobile) wrapper.style.transform = 'scale(0.55)';
-                    alert("이미지 처리 중 오류가 발생했습니다. 브라우저 캐시를 삭제하고 다시 시도해주세요.");
+                    alert("저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+                    btn.innerText = "사원증 이미지로 저장하기";
                     btn.disabled = false;
                 });
-        }, 500); // 넉넉하게 대기 시간을 주어 사진이 메모리에 완전히 로드되게 함
+        }, 100); 
     }
 </script>
+
 </body>
 </html>
